@@ -40,13 +40,3 @@ def cartoonise(img_rgb, num_down=2, num_bilateral=7):
     img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
     img_cartoon = cv2.bitwise_and(img_color, img_edge)
     return img_cartoon
-
-
-if __name__ == '__main__':
-    from skimage.io import imread, imshow
-    from skimage.data import chelsea
-    from matplotlib import pylab as plt
-    img = chelsea()
-    out = cartoonise(img)
-    plt.imshow(out)
-    plt.show()

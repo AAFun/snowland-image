@@ -7,8 +7,4 @@
 # @time: 2018/7/26 10:30
 # @Software: PyCharm
 
-__version__ = '0.1.0'
-
-
-if __name__ == '__main__':
-    pass
+__version__ = '0.1.2'
