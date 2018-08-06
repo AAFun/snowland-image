@@ -10,4 +10,3 @@
 
 from .color import *
 from .api import *
-from .thirdparty import *

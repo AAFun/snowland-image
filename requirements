@@ -3,3 +3,4 @@ numpy>=1.0.0
 scikit-image>=0.13
 matplotlib>=2.1.2
 wand>=0.4.4
+snowland-pencildraw>=0.1.3
