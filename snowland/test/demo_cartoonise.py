@@ -17,9 +17,7 @@ from skimage.io import imread, imshow
 from skimage.data import chelsea
 from matplotlib import pylab as plt
 
-
 if __name__ == '__main__':
-
     img = chelsea()
     out = cartoonise(img)
     plt.imshow(out)
