@@ -7,4 +7,4 @@
 # @time: 2018/7/26 10:30
 # @Software: PyCharm
 
-__version__ = '0.1.2'
+__version__ = '0.1.4'
