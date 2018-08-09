@@ -24,7 +24,7 @@ setup(
     license='BSD License',
     packages=find_packages(),
     platforms=["all"],
-    url='https://gitee.com/hoops/snowland-img2cartoon',
+    url='https://github.com/AAFun/scikit-snowland',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
