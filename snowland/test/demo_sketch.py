@@ -21,4 +21,5 @@ if __name__ == '__main__':
     img = chelsea()
     out = sketch(img, 15)
     plt.imshow(out, cmap='gray')
+    plt.axis('off')
     plt.show()

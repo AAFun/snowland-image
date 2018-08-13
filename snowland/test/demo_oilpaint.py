@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Author  : 河北雪域网络科技有限公司 A.Star
 # @contact: astar@snowland.ltd
-# @site: 
-# @file: demo_handpainting.py
-# @time: 2018/8/8 21:51
+# @site: www.snowland.ltd
+# @file: demo_oilpaint.py
+# @time: 2018/8/13 10:44
 # @Software: PyCharm
 
 
-from snowland.image.api import freehand
+from snowland.image.api import oilpaint
 from skimage.data import astronaut
 from matplotlib import pylab as plt
 
@@ -19,7 +19,7 @@ from matplotlib import pylab as plt
 if __name__ == '__main__':
     img = astronaut()
     plt.figure()
-    out = freehand(img)
-    plt.imshow(out, cmap='gray')
-    plt.axis('off')
+    out = oilpaint(img)
+    plt.axes('off')
+    plt.imshow(out)
     plt.show()

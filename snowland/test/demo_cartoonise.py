@@ -21,4 +21,5 @@ if __name__ == '__main__':
     img = chelsea()
     out = cartoonise(img)
     plt.imshow(out)
+    plt.axis('off')
     plt.show()

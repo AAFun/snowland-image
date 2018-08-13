@@ -11,3 +11,4 @@
 from .img_to_cartoon import cartoonise
 from .img_to_sketch import sketch
 from .img_to_freehand import freehand
+from .img_to_oilpaint import oilpaint
