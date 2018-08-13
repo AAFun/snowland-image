@@ -7,26 +7,21 @@
 # @time: 2018/8/12 2:15
 # @Software: PyCharm
 
-import numpy as np
-from matplotlib import pylab as plt
-from skimage.morphology import disk
-from skimage.filters import median
 from copy import deepcopy
 
+import numpy as np
 
-# https: // www.cnblogs.com / lonelyxmas / p / 8564738.
-# html
+
+# https://www.cnblogs.com/lonelyxmas/p/ 8564738.html
 def oilpaint(img, intensity=5):
     if np.max(img) > 1.1:
-        pass
-    else:
-        img /= 255
+        img = img / 255
     tempValues = deepcopy(img)
-    [w, h, _] = img.shape
+    w, h, _ = img.shape
     rand = np.random.randint(0, intensity, (w, h))
-    X, Y = np.meshgrid(range(w), range(h))
+    X, Y = np.meshgrid(range(h), range(w))
     X, Y = X + rand, Y + rand
-    X[X >= w] = w - 1
-    Y[Y >= h] = h - 1
+    X[X >= h] = h - 1
+    Y[Y >= w] = w - 1
     tempValues[:, :, :] = img[Y, X, :]
     return tempValues

@@ -7,7 +7,7 @@
 # @time: 2018/7/26 10:38
 # @Software: PyCharm
 
-# 运行时请确定电脑已经安装scikit-snowland 0.0.1以上版本
+# 运行时请确定电脑已经安装scikit-snowland 0.1.1以上版本
 # 否则请先
 # pip install scikit-snowland
 
