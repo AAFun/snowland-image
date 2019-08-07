@@ -8,5 +8,6 @@
 # @Software: PyCharm
 
 
-from .color import *
-from .api import *
+from snowland.image.color import *
+from snowland.image.api import *
+from snowland.image.transform import *

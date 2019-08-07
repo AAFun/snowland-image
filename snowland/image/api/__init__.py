@@ -8,9 +8,10 @@
 # @Software: PyCharm
 
 
-from .img_to_cartoon import cartoonise
-from .img_to_sketch import sketch
-from .img_to_freehand import freehand
-from .img_to_oilpaint import oilpaint
-from pencildraw import pencil_drawing
-from pencildraw.pencils import pencil0, pencil1,pencil2, pencil3, pencil4
+from snowland.image.api.img_to_cartoon import cartoonise
+from snowland.image.api.img_to_sketch import sketch
+from snowland.image.api.img_to_freehand import freehand
+from snowland.image.api.img_to_oilpaint import oilpaint
+from snowland.image.api.digital_screening import *
+# from pencildraw import pencil_drawing
+# from pencildraw.pencils import pencil0, pencil1,pencil2, pencil3, pencil4

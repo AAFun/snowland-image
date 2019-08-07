@@ -14,8 +14,8 @@
 from matplotlib import pylab as plt
 from skimage.data import chelsea
 
-from snowland.image.api import pencil2
-from snowland.image.api import pencil_drawing
+from pencildraw import pencil2
+from pencildraw import pencil_drawing
 
 if __name__ == '__main__':
     im = chelsea()

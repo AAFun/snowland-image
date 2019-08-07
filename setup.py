@@ -9,7 +9,9 @@
 
 
 from setuptools import setup, find_packages
+from astartool.setuptool import load_install_requires
 from snowland import __version__
+
 setup(
     name='scikit-snowland',
     version=__version__,
@@ -33,15 +35,9 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: Implementation',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries'
     ],
-    install_requires=[
-        'opencv-python>=3.4.1.15',
-        'numpy>=1.0.0',
-        'scikit-image>=0.13',
-        'matplotlib>=2.1.2'
-    ]
+    install_requires=load_install_requires()
 )

@@ -19,6 +19,9 @@ from matplotlib import pylab as plt
 
 if __name__ == '__main__':
     img = chelsea()
+    plt.figure(1)
+    plt.imshow(img)
+    plt.figure(2)
     out = cartoonise(img)
     plt.imshow(out)
     plt.axis('off')

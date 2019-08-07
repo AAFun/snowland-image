@@ -19,6 +19,8 @@ from matplotlib import pylab as plt
 if __name__ == '__main__':
     img = astronaut()
     plt.figure()
+    plt.imshow(img)
+    plt.figure()
     out = freehand(img)
     plt.imshow(out, cmap='gray')
     plt.axis('off')
