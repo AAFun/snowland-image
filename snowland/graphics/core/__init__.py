@@ -3,9 +3,7 @@
 # @Author: 深圳星河软通科技有限公司 A.Star
 # @contact: astar@snowland.ltd
 # @site: www.astar.ltd
-# @file: 
-# @time: 
+# @file: __init__.py
+# @time: 2019/8/17 0:02
 # @Software: PyCharm
 
-
-from snowland.core.core import *

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : 河北雪域网络科技有限公司 A.Star
 # @contact: astar@snowland.ltd
-# @site: 
+# @site: www.snowland.ltd
 # @file: color.py
 # @time: 2018/7/26 0:24
 # @Software: PyCharm
@@ -28,7 +28,8 @@ def rgb2ycbcr(img):
     elif isinstance(img, np.uint16):
         t = 257.0 / 65535
         offset = 257
-
+    else:
+        raise ValueError('image type not support ')
     T = origT * t
     Offset = oriOffset * offset
 
@@ -55,7 +56,8 @@ def ycbcr2rgb(img):
     elif isinstance(img, np.uint16):
         t = 65535 / 257.0
         offset = 65535
-
+    else:
+        raise ValueError('image type not support ')
     T = tinv * t
     Offset = offset * tinv.dot(oriOffset)
 
@@ -68,11 +70,3 @@ def ycbcr2rgb(img):
         rgb[rgb > 1.0] = 1.0
         rgb[rgb < 0] = 0
     return rgb
-
-
-if __name__ == '__main__':
-    from skimage.io import imread
-
-    img = imread('1.jpg')
-    img2 = rgb2ycbcr(img)
-    img1 = ycbcr2rgb(img2)

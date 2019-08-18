@@ -8,8 +8,9 @@
 # @Software: PyCharm
 
 
-from snowland.graphics.geometry import Point, Point2D, Point3D
-from snowland.core import Vector
+from snowland.graphics.core.geometry2d import Point2D
+from snowland.graphics.core.geometry3d import Point3D
+from snowland.graphics.core.base import Vector
 
 class Line:
     pass

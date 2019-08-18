@@ -13,12 +13,12 @@ from astartool.setuptool import load_install_requires
 from snowland import __version__
 
 setup(
-    name='scikit-snowland',
+    name='snowland-image',
     version=__version__,
     description=(
-        'scikit tool for image '
+        'toolkit for image'
     ),
-    long_description=open('README.rst').read(),
+    long_description=open('README.rst', encoding='utf-8').read(),
     author='A.Star',
     author_email='astar@snowland.ltd',
     maintainer='A.Star',
@@ -37,6 +37,8 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Topic :: Software Development :: Libraries'
     ],
     install_requires=load_install_requires()

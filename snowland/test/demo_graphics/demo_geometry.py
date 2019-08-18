@@ -7,8 +7,7 @@
 # @time: 
 # @Software: PyCharm
 
-from snowland.graphics.geometry import Point2D, Point3D, LineSegment2D, LineSegment3D
-
+from snowland.graphics.core.geometry2d import Point2D, LineSegment2D
 
 if __name__ == '__main__':
     p0_2d = Point2D((1, 3))

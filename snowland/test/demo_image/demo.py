@@ -8,8 +8,8 @@
 # @Software: PyCharm
 
 
-from snowland.image.api import sketch, oilpaint, freehand, cartoonise
-from skimage.io import imread, imshow
+from snowland.image.style_migration import sketch, oilpaint, freehand, cartoonise
+from skimage.io import imread, imshow, imsave
 from skimage.data import chelsea
 from matplotlib import pylab as plt
 
@@ -27,31 +27,42 @@ if __name__ == '__main__':
 
     plt.subplot(2, 3, 1)
     plt.imshow(img)
+    imsave('原图.jpg', img)
     plt.title('原图')
     plt.axis('off')
 
     plt.subplot(2, 3, 2)
     plt.title('铅笔画')
     I = pencil_drawing(img, 8, 1, 8, 1.0, 1.0, pencil2)
+    imsave('铅笔画.jpg', I)
     plt.axis('off')
     plt.imshow(I)
 
     plt.subplot(2, 3, 3)
     plt.title('手绘')
     out = freehand(img)
+    imsave('手绘.jpg', out)
     plt.axis('off')
     plt.imshow(out, cmap='gray')
 
-    plt.subplot(2, 3, 5)
+    plt.subplot(2, 3, 4)
     plt.title('油画')
     out = oilpaint(img)
+    imsave('油画.jpg', out)
+    plt.axis('off')
+    plt.imshow(out)
+
+    plt.subplot(2, 3, 5)
+    plt.title('卡通画')
+    out = cartoonise(img)
+    imsave('卡通画.jpg', out)
     plt.axis('off')
     plt.imshow(out)
 
     plt.subplot(2, 3, 6)
     plt.title('素描')
     out = sketch(img, 10)
+    imsave('素描.jpg', out)
     plt.imshow(out, cmap='gray')
     plt.axis('off')
-
     plt.show()
