@@ -10,6 +10,8 @@
 from snowland.graphics.core.geometry2d import Point2D, Polygon, PolygonWithoutHoles
 import numpy as np
 
+npa = np.array
+
 
 def __in_polygon(p: Point2D, polygon):
     """
@@ -57,7 +59,7 @@ def in_polygon(point, polygon: Polygon):
     else:
         # 多个点判断， 返回多个值
         if isinstance(point[0], Point2D):
-            return [__in_polygon(p, polygon) for p in point]
+            return npa([__in_polygon(p, polygon) for p in point])
         if isinstance(point[0], np.ndarray) and len(point.shape) == 1:
-            return [__in_polygon(Point2D(p), polygon) for p in point]
+            return npa([__in_polygon(Point2D(p), polygon) for p in point])
         raise ValueError('error')
