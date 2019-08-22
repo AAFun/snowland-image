@@ -21,15 +21,15 @@ def __in_polygon(p: Point2D, polygon):
     :return:
     """
     for point in polygon.p:
-        if p == point:  # 使用重载的等于方法
+        if np.all(p.p == point):
             return True
 
     for hole in polygon.holes:
         for point in hole:
-            if p == point:  # 使用重载的等于方法
+            if np.all(p.p == point):
                 return True
     flag = False
-    for i, point in enumerate(polygon.p[1:-1, :]):
+    for i, point in enumerate(polygon.p[:, :]):
         if (point[1] <= p[1] < polygon.p[i - 1, 1] or polygon.p[i - 1, 1] <= p[1] < point[1]) and \
                 (p[0] < (polygon.p[i - 1, 0] - point[0]) * (p[1] - point[1]) / (polygon.p[i - 1, 1] - point[1]) + point[
                     1]):
@@ -37,7 +37,7 @@ def __in_polygon(p: Point2D, polygon):
 
     for hole in polygon.holes:
         polygon_temp = PolygonWithoutHoles(hole)
-        for i, point in enumerate(polygon_temp.p[1:-1, :]):
+        for i, point in enumerate(polygon_temp.p[:, :]):
             if (point[1] <= p[1] < polygon_temp.p[i - 1, 1] or polygon_temp.p[i - 1, 1] <= p[1] < point[1]) and \
                     (p[0] < (polygon_temp.p[i - 1, 0] - point[0]) *
                      (p[1] - point[1]) / (polygon_temp.p[i - 1, 1] - point[1]) + point[1]):
