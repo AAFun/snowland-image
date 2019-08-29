@@ -91,19 +91,42 @@ class Vector(object):
         return self.length() - 1 < eps
 
 
+class Vector2(Vector):
+    pass
+
+
+class Vector3(Vector):
+    pass
+
+
 class UnitVector(Vector):
     def __init__(self, x=None, dim=None, start=None, end=None, eps=1e-8):
         super(UnitVector, self).__init__(x, dim, start, end)
         assert self.is_unit_vector()
 
 
-UNITVECTORX = UnitVector((1, 0, 0))
-UNITVECTORY = UnitVector((0, 1, 0))
-UNITVECTORZ = UnitVector((0, 0, 1))
+class UnitVector3(Vector3):
+    def __init__(self, x=None, dim=None, start=None, end=None, eps=1e-8):
+        super(UnitVector3, self).__init__(x, dim, start, end)
+        assert self.is_unit_vector()
+
+
+UNITVECTORX = UnitVector3((1, 0, 0))
+UNITVECTORY = UnitVector3((0, 1, 0))
+UNITVECTORZ = UnitVector3((0, 0, 1))
 
 
 class Graphic(metaclass=ABCMeta):
     pass
+
+
+class View(object):
+    def __init__(self, graphic: Graphic, red=255, green=255, blue=255, alpha=None, color=None):
+        if color is not None:
+            self.color = color
+        else:
+            self.color = (red, green, blue, alpha)
+        self.graphic = graphic
 
 
 class Point(Graphic):
@@ -160,7 +183,7 @@ class LineString(Graphic):
     def length(self, metric='euclidean', *args, **kwargs):
         m, n = self.X.shape
         return np.sum(
-            [pdist(self.X[ind:ind+2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
+            [pdist(self.X[ind:ind + 2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
 
     def is_ring(self):
         return np.all(self.X[0, :] == self.X[-1, :])

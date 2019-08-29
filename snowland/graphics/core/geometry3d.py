@@ -12,7 +12,7 @@ from abc import abstractmethod
 from scipy.spatial.distance import pdist
 from skimage.draw.draw import *
 
-from snowland.graphics.core.base import Point, LineString, Shape, Stereograph
+from snowland.graphics.core.base import Point, LineString, Shape, Stereograph, View
 from snowland.graphics.core.base import UNITVECTORZ
 
 npa = np.array
@@ -329,3 +329,7 @@ class Sphere(StraightEllipsoid):
     def __init__(self, r=1, p=(0, 0, 0)):
         super(Sphere, self).__init__(r, r, r, p)
 
+
+class SphereView(View):
+    def __init__(self, *args, **kwargs):
+        super(SphereView, self).__init__(*args, **kwargs)
