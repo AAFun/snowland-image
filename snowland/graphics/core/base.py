@@ -12,8 +12,8 @@ from abc import ABCMeta, abstractmethod
 from numbers import Number
 
 from scipy.spatial.distance import pdist
-from skimage.draw.draw import *
-
+import numpy as np
+from astartool.number import equals_zero_all
 npa = np.array
 npl = np.linalg
 
@@ -28,7 +28,7 @@ class Vector(object):
             # TODO: 判断x是一维的
             x = npa(x)
         elif start is not None and end is not None:
-            x = end - start
+            x = Point(end) - Point(start)
 
         self.x = x
 
@@ -55,9 +55,17 @@ class Vector(object):
         """
         return npl.norm(self.x)
 
+    def dot_product(self, other):
+        v2 = Vector(other)
+        return self.x.dot(v2.x)
+
+    def cross_product(self, other):
+        # TODO: 向量积
+        pass
+
     def cos_angle(self, other):
         v2 = Vector(other)
-        return self.x.dot(v2.x) / (self * v2)
+        return self.dot_product(v2) / (self.length() * v2.length())
 
     def angle(self, other):
         """
@@ -74,7 +82,7 @@ class Vector(object):
         :param eps:
         :return:
         """
-        return np.fabs(self * other) < eps
+        return equals_zero_all(self * other, eps=eps)
 
     def is_parallel(self, other, eps):
         """
@@ -88,7 +96,22 @@ class Vector(object):
         是否是单位向量
         :return:
         """
-        return self.length() - 1 < eps
+        return equals_zero_all(self.length() - 1, eps)
+
+    def norm(self):
+        """
+        返回其单位向量
+        :return:
+        """
+        return Vector(self.x / self.length())
+
+    def to_norm(self):
+        """
+        转化到单位向量
+        :return:
+        """
+        self.x /= self.length()
+        return self
 
 
 class Vector2(Vector):
@@ -120,15 +143,6 @@ class Graphic(metaclass=ABCMeta):
     pass
 
 
-class View(object):
-    def __init__(self, graphic: Graphic, red=255, green=255, blue=255, alpha=None, color=None):
-        if color is not None:
-            self.color = color
-        else:
-            self.color = (red, green, blue, alpha)
-        self.graphic = graphic
-
-
 class Point(Graphic):
     def __init__(self, p):
         if isinstance(p, Point):
@@ -151,18 +165,18 @@ class Point(Graphic):
             if len(self.p) != len(other):
                 return False
             else:
-                return self.p == other
+                return equals_zero_all(self.p - other)
         elif isinstance(other, Point):
             if len(self.p) != len(other.p):
                 return False
             else:
-                return self.p == other.p
+                return equals_zero_all(self.p - other.p)
 
     def __sub__(self, other):
         if isinstance(other, Point):
             return Vector(self.p - other.p)
         else:
-            raise
+            raise ValueError('Error in Point')
 
     def __str__(self):
         itor = [str(_) for _ in self.p]
@@ -183,10 +197,14 @@ class LineString(Graphic):
     def length(self, metric='euclidean', *args, **kwargs):
         m, n = self.X.shape
         return np.sum(
-            [pdist(self.X[ind:ind + 2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
+            [pdist(self.X[ind:ind+2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
 
-    def is_ring(self):
-        return np.all(self.X[0, :] == self.X[-1, :])
+    def is_ring(self, eps=1e-8):
+        """
+        判断是否成环
+        :return:
+        """
+        return equals_zero_all(self.X[0, :] - self.X[-1, :], eps=eps)
 
 
 class Shape(Graphic):

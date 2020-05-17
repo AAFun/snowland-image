@@ -8,7 +8,7 @@
 # @Software: PyCharm
 
 from scipy.spatial.distance import pdist, cdist
-from skimage.draw.draw import *
+import numpy as np
 
 from snowland.graphics.core.base import Point, LineString, Shape
 
@@ -59,7 +59,6 @@ class LineSegment2D(LineString2D):
 
     def length(self, metric='euclidean', *args, **kwargs):
         return np.sum(pdist(self.X, metric, *args, **kwargs))
-
 
 
 class Polygon(Shape):
@@ -136,8 +135,6 @@ class PolygonWithoutHoles(Polygon):
 
 
 class ConvexPolygon(PolygonWithoutHoles):
-    def __init__(self, p, *args, **kwargs):
-        super(PolygonWithoutHoles, self).__init__(p, holes=None)
 
     def area(self):
         # 面积
@@ -147,67 +144,28 @@ class ConvexPolygon(PolygonWithoutHoles):
         if len(points) < 3:
             raise Exception("error")
 
-        for i in range(0, len(points) - 1):
-            p1 = points[i]
-            p2 = points[i + 1]
-
+        for i, p1 in enumerate(points[:, :]):  # 当i = 0时首尾计算面积
+            p2 = points[i - 1]
             triArea = (p1[0] * p2[1] - p2[0] * p1[1]) / 2
             # print(triArea)
             area += triArea
-
-        fn = (points[-1][0] * points[0][1] - points[0][0] * points[-1][1]) / 2
-        # print(fn)
-        return abs(area + fn)
+        return abs(area)
 
 
 class Triangle(ConvexPolygon):
     """
     三角形
     """
-
-    def __init__(self, p):
-        super(Triangle, self).__init__(p)
+    pass
 
 
 class Rectangle(ConvexPolygon):
-    def __init__(self, p):
-        super(Rectangle, self).__init__(p)
-
-
-class BoundingBox(Rectangle):
-    def __init__(self, p=None, left_bottom=None, top_right=None):
-        super(PolygonWithoutHoles, self).__init__(p=None)
-        if p:
-            assert len(p) == 2, "len(p) must be 2"
-            if p[0][0] > p[1][0]:
-                min_px, max_px = p[1][0], p[0][0]
-            else:
-                max_px, min_px = p[1][0], p[0][0]
-            if p[0][1] > p[1][1]:
-                min_py, max_py = p[1][1], p[0][1]
-            else:
-                max_py, min_py = p[1][1], p[0][1]
-            self.left_bottom = Point2D((min_px, min_py))
-            self.top_right = Point2D((max_px, max_py))
-        else:
-            if left_bottom[0] > top_right[0]:
-                min_px, max_px = top_right[0], left_bottom[0]
-            else:
-                max_px, min_px = top_right[0], left_bottom[0]
-            if left_bottom[1] > top_right[1]:
-                min_py, max_py = top_right[1], left_bottom[1]
-            else:
-                max_py, min_py = top_right[1], left_bottom[1]
-            self.left_bottom = Point2D((min_px, min_py))
-            self.top_right = Point2D((max_px, max_py))
-
-    def to_bbox(self):
-        return self.left_bottom[0], self.left_bottom[1], self.top_right[0] - self.left_bottom[0], self.top_right[1] - self.left_bottom[1]
+    pass
 
 
 class Diamond(ConvexPolygon):
     def __init__(self, p):
-        super(PolygonWithoutHoles, self).__init__(p)
+        super(PolygonWithoutHoles, self).__init__(p, holes=None)
         m, n = self.p.shape
         dist = [pdist(self.p[ind:ind + 2, :]) for ind in range(m - 1)]
         d = cdist(self.p[:1, :], self.p[-1:, :])
@@ -219,8 +177,8 @@ class Square(Rectangle, Diamond):
     正方形
     """
 
-    def __init__(self, *args, eps=1e-8, **kwargs):
-        super(Square, self).__init__(*args, **kwargs)
+    def __init__(self, p, eps=1e-8, *args, **kwargs):
+        super(Square, self).__init__(p, *args, **kwargs)
         # TODO 判断方形
 
 
@@ -259,28 +217,3 @@ class Circle(Ellipse):
     @r.setter
     def set_r(self, r):
         self.a = self.b = r
-
-
-class Capsule(Shape):
-    # 胶囊体
-    # 即，所有距离线段距离为r的点组成的图形
-    def __init__(self, line_segment, r, p1=None, p2=None, *args, **kwargs):
-        super(Capsule, self).__init__(*args, **kwargs)
-        self.r = r
-        self.line_segment = LineSegment2D(line_segment, p1, p2)
-
-    def area(self):
-        """
-        面积
-        :return:
-        """
-        return np.pi * self.r * self.r + 2 * self.r * self.line_segment.length()
-
-    def girth(self):
-        """
-        周长
-        :return:
-        """
-        return self.line_segment.length() * 2 + 2 * self.r * np.pi
-
-

@@ -22,7 +22,8 @@ plt.rcParams['axes.unicode_minus'] = False  # 步骤二（解决坐标轴负数�
 
 
 if __name__ == '__main__':
-    img = chelsea()
+    # img = chelsea()
+    img = imread('222.jpg')
     plt.figure()
 
     plt.subplot(2, 3, 1)

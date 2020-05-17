@@ -12,7 +12,7 @@ from abc import abstractmethod
 from scipy.spatial.distance import pdist
 from skimage.draw.draw import *
 
-from snowland.graphics.core.base import Point, LineString, Shape, Stereograph, View
+from snowland.graphics.core.base import Point, LineString, Shape, Stereograph
 from snowland.graphics.core.base import UNITVECTORZ
 
 npa = np.array
