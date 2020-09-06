@@ -8,7 +8,7 @@
 # @Software: PyCharm
 
 
-from snowland.graphics.core.geometry3d import Sphere
+from snowland.graphics.core.solid_geometry_3d import Sphere
 
 ball = Sphere(1, [1, 3, 4])
 

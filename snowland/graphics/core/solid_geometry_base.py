@@ -3,7 +3,7 @@
 # @Author: 深圳星河软通科技有限公司 A.Star
 # @contact: astar@snowland.ltd
 # @site: www.astar.ltd
-# @file: base.py
+# @file: solid_geometry_base.py
 # @time: 2019/8/17 0:04
 # @Software: PyCharm
 
@@ -14,8 +14,25 @@ from numbers import Number
 from scipy.spatial.distance import pdist
 import numpy as np
 from astartool.number import equals_zero_all
+
 npa = np.array
 npl = np.linalg
+
+__all__ = [
+    'Graphic',
+    'LineString',
+    'Point',
+    'Shape',
+    'Stereograph',
+    'UnitVector',
+    'UnitVector3',
+    'UNITVECTORX',
+    'UNITVECTORY',
+    'UNITVECTORZ',
+    'Vector',
+    'Vector2',
+    'Vector3',
+]
 
 
 class Vector(object):
@@ -89,14 +106,19 @@ class Vector(object):
         判断共线
         :return:
         """
-        # TODO
+        if isinstance(other, Vector):
+            nv2 = other.x
+        else:
+            nv2 = np.asarray(other)
+        nv1 = self.x
+        return np.rank([nv1, nv2]) == 1
 
     def is_unit_vector(self, eps=1e-8):
         """
         是否是单位向量
         :return:
         """
-        return equals_zero_all(self.length() - 1, eps)
+        return -eps < self.length() - 1 < eps
 
     def norm(self):
         """
@@ -197,7 +219,7 @@ class LineString(Graphic):
     def length(self, metric='euclidean', *args, **kwargs):
         m, n = self.X.shape
         return np.sum(
-            [pdist(self.X[ind:ind+2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
+            [pdist(self.X[ind:ind + 2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
 
     def is_ring(self, eps=1e-8):
         """

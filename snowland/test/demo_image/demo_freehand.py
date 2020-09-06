@@ -8,7 +8,7 @@
 # @Software: PyCharm
 
 
-from snowland.image.api import freehand
+from snowland.image.api.img_to_freehand import freehand
 from skimage.data import astronaut
 from matplotlib import pylab as plt
 

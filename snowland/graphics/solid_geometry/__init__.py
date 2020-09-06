@@ -8,4 +8,4 @@
 # @Software: PyCharm
 
 
-from snowland.graphics.ploygon._ploygon import in_polygon
+from snowland.graphics.solid_geometry._ploygon import in_polygon

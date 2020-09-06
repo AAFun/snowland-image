@@ -7,9 +7,9 @@
 # @time: 2019/8/12 20:48
 # @Software: PyCharm
 
-from snowland.graphics.core.geometry2d import Point2D, Polygon, PolygonWithoutHoles, LineString2D, ConvexPolygon, Rectangle
-from snowland.graphics.core.base import Vector
-from snowland.graphics.core.analytic_geometry import Line2D
+from snowland.graphics.core.solid_geometry_2d import Point2D, Polygon, PolygonWithoutHoles, LineString2D, ConvexPolygon, Rectangle
+from snowland.graphics.core.solid_geometry_base import Vector
+from snowland.graphics.core.analytic_geometry_2d import Line2D
 import numpy as np
 
 npl = np.linalg

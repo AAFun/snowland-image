@@ -12,7 +12,7 @@
 # pip install scikit-snowland
 
 
-from snowland.image.api import cartoonise
+from snowland.image.api.img_to_cartoon import cartoonise
 from skimage.io import imread, imshow
 from skimage.data import chelsea
 from matplotlib import pylab as plt

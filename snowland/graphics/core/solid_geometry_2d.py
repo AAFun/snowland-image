@@ -10,11 +10,26 @@
 from scipy.spatial.distance import pdist, cdist
 import numpy as np
 
-from snowland.graphics.core.base import Point, LineString, Shape
+from snowland.graphics.core.solid_geometry_base import Point, LineString, Shape
 
 npa = np.array
 npm = np.mat
 
+
+__all__ = [
+    'Circle',
+    'ConvexPolygon',
+    'Diamond',
+    'Ellipse',
+    'LineSegment2D',
+    'LineString2D',
+    'Point2D',
+    'Polygon',
+    'PolygonWithoutHoles',
+    'Rectangle',
+    'Square',
+    'Triangle'
+]
 
 class Point2D(Point):
     def __init__(self, p=None, x=None, y=None):

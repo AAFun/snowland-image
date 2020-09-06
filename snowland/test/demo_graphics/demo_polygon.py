@@ -10,8 +10,8 @@
 
 # if __name__ == '__main__':
 
-from snowland.graphics.core.geometry2d import Circle, Square, Point2D
-from snowland.graphics.ploygon._ploygon import in_polygon
+from snowland.graphics.core.solid_geometry_2d import Circle, Square, Point2D
+from snowland.graphics.solid_geometry._ploygon import in_polygon
 
 unit_circle = Circle((0, 0), 1)
 print("单位圆面积", unit_circle.area())

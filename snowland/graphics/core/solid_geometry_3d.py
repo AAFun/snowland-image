@@ -3,7 +3,7 @@
 # @Author: 深圳星河软通科技有限公司 A.Star
 # @contact: astar@snowland.ltd
 # @site: www.astar.ltd
-# @file: geometry3d.py
+# @file: solid_geometry_3d.py
 # @time: 2019/8/17 17:13
 # @Software: PyCharm
 
@@ -12,11 +12,31 @@ from abc import abstractmethod
 from scipy.spatial.distance import pdist
 from skimage.draw.draw import *
 
-from snowland.graphics.core.base import Point, LineString, Shape, Stereograph
-from snowland.graphics.core.base import UNITVECTORZ
+from snowland.graphics.core.solid_geometry_base import Point, LineString, Shape, Stereograph
+from snowland.graphics.core.solid_geometry_base import UNITVECTORZ
 
 npa = np.array
 npm = np.mat
+
+__all__ = [
+    'Circle3D',
+    'ConvexPolygon3D',
+    'Cylinder',
+    'Ellipse3D',
+    'LineSegment3D',
+    'LineString3D',
+    'Point3D',
+    'Polygon3D',
+    'PolygonWithoutHoles3D',
+    'Sphere',
+    'Square3D',
+    'StraightCone',
+    'StraightCylinder',
+    'StraightEllipsoid',
+    'StraightPrism',
+    'Triangle3D',
+    'Vertebrae'
+]
 
 
 class Point3D(Point):
@@ -81,7 +101,9 @@ class Shape3D(Shape):
 class Polygon3D(Shape3D):
     def __init__(self, p=None, holes=None):
         # TODO:
-        pass
+        super(Polygon3D, self).__init__()
+        self.p = p
+        self.holes = holes
 
     def area(self):
         # TODO:
@@ -192,8 +214,8 @@ class Circle3D(Ellipse3D):
         return self.a
 
     @r.setter
-    def set_r(self, r):
-        self.a = self.b = r
+    def set_r(self, ra):
+        self.a = self.b = ra
 
     def girth(self):
         """
@@ -312,7 +334,7 @@ class StraightPrism(Cylinder):
 class StraightEllipsoid(Stereograph):
     def __init__(self, a=1, b=1, c=1, p=(0, 0, 0)):
         # (x-x0)**2 / a**2 + (y-y0)**2 / b**2+(z-z0)**2 / c**2=1
-        self.p = Polygon3D(p)
+        self.p = Point3D(p)
         self.a = a
         self.b = b
         self.c = c
@@ -329,7 +351,6 @@ class Sphere(StraightEllipsoid):
     def __init__(self, r=1, p=(0, 0, 0)):
         super(Sphere, self).__init__(r, r, r, p)
 
-
-class SphereView(View):
-    def __init__(self, *args, **kwargs):
-        super(SphereView, self).__init__(*args, **kwargs)
+    @property
+    def r(self):
+        return self.a
