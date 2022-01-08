@@ -9,7 +9,7 @@
 
 from astartool.setuptool import get_version
 
-version = (0, 1, 4, 'final', 0)
+version = (0, 1, 5, 'alpha', 1)
 __version__ = get_version(version)
 
 del get_version
