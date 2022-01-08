@@ -10,7 +10,7 @@
 from scipy.spatial.distance import pdist, cdist
 import numpy as np
 
-from snowland.graphics.core.solid_geometry_base import Point, LineString, Shape
+from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape
 
 npa = np.array
 npm = np.mat
@@ -218,7 +218,7 @@ class Ellipse(Shape):
         return 4 * self.a * self.b * np.pi
 
     def is_circle(self, eps=1e-8):
-        return np.fabs(self.a - self.b) <= eps
+        return -eps <= (self.a - self.b) <= eps
 
 
 class Circle(Ellipse):

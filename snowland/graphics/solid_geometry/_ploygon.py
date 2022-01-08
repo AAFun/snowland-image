@@ -7,8 +7,8 @@
 # @time: 2019/8/12 20:48
 # @Software: PyCharm
 
-from snowland.graphics.core.solid_geometry_2d import Point2D, Polygon, PolygonWithoutHoles, LineString2D, ConvexPolygon, Rectangle
-from snowland.graphics.core.solid_geometry_base import Vector
+from snowland.graphics.core.computational_geometry_2d import Point2D, Polygon, PolygonWithoutHoles, LineString2D, ConvexPolygon, Rectangle
+from snowland.graphics.core.computational_geometry_base import Vector
 from snowland.graphics.core.analytic_geometry_2d import Line2D
 import numpy as np
 
@@ -200,34 +200,3 @@ def graham_scan(points):
 
     return ConvexPolygon(stack)
 
-
-def minimum_enclosing_rectangle(points):
-    # https://www.cnblogs.com/tiandsp/p/4044282.html
-    myhull = graham_scan(points)
-    min_area = np.inf
-    hull = myhull.p
-    for i in range(len(hull)):
-        p1 = Point2D(hull[i - 1, :])  # 凸包上两个点
-        p2 = Point2D(hull[i, :])
-
-        line = Line2D(p1=p1, p2=p2)  # 连接两点的直线，作为矩形的一条边
-        d = line.distance_points(hull)
-
-        ind = np.argmax(d)
-        h = d[ind]  # 得到距离最大的点距离，即为高，同时得到该点坐标
-
-        line_vertical = Line2D(a=line.b, b=-line.a, c=line.a*hull[ind, 1] - line.b * hull[ind, 0])  # 第二条线
-
-        rect_h = line_vertical.distance_points(hull)
-        rect_w = line_vertical.distance_points(hull)
-
-        area = np.max(rect_h) * np.max(rect_w)
-        if area < min_area:
-            return Rectangle
-
-    if area >= h * w  # 使面积最小
-    area = h * w;
-    pbar = Re[[x1[indmax1], y1[indmax1]],
-    [x2[indmax2], y2[indmax2],
-     [x2[indmin2], y2[indmin2]],
-     [x1[indmin1], y1[indmin1]]

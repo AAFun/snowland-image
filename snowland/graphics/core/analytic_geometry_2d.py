@@ -8,17 +8,22 @@
 # @Software: PyCharm
 
 
+import math
 import numpy as np
+from scipy.spatial.distance import cdist, pdist, euclidean
 
-from snowland.graphics.core.solid_geometry_2d import Point2D
-from snowland.graphics.core.solid_geometry_3d import Point3D
-from snowland.graphics.core.solid_geometry_base import Vector, Vector3
+from snowland.graphics.core.computational_geometry_2d import Point2D
+from snowland.graphics.core.computational_geometry_3d import Point3D
+from snowland.graphics.core.computational_geometry_base import Vector, Vector3
 from snowland.graphics.core.analytic_geometry_base import Line, Surface
+
 npa = np.array
+npl = np.linalg
 
 __all__ = [
     'Line2D'
 ]
+
 
 class Line2D(Line):
     def __init__(self, a=None, b=0, c=0, p1: Point2D = None, p2: Point2D = None, *args, **kwargs):
@@ -51,12 +56,12 @@ class Line2D(Line):
         """
         # TODO: 这里可以用矩阵进行运算的，以后补上
         if isinstance(points, list):
-            return npa([self.__distance_point(self, each) for each in points])
+            return npa([self.__distance_point(each) for each in points])
         elif isinstance(points, np.ndarray):
             if len(points.shape) == 2:
-                return npa([self.__distance_point(self, each) for each in points])
+                return npa([self.__distance_point(each) for each in points])
             else:
-                return self.__distance_point(self, points)
+                return self.__distance_point(points)
         else:
             raise ValueError('points 参数错误')
 

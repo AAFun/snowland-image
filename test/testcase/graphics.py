@@ -7,9 +7,12 @@
 # @time: 2020/9/6 23:48
 # @Software: PyCharm
 
+
+import unittest
 from astartool.project import std_logging
 
-class TestLine2D:
+
+class TestLine2D(unittest.TestCase):
     @classmethod
     @std_logging()
     def setup_class(cls):

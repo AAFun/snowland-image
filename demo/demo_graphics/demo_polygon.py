@@ -10,7 +10,7 @@
 
 # if __name__ == '__main__':
 
-from snowland.graphics.core.solid_geometry_2d import Circle, Square, Point2D
+from snowland.graphics.core.computational_geometry_2d import Circle, Square, Point2D
 from snowland.graphics.solid_geometry._ploygon import in_polygon
 
 unit_circle = Circle((0, 0), 1)
