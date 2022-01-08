@@ -1,0 +1,8 @@
+opencv-python>=3.4.1.15
+numpy>=1.0.0
+scipy>=1.0.0
+scikit-image>=0.13
+matplotlib>=2.1.2
+snowland-pencildraw>=0.1.7
+astartool>=0.0.3
+pylsd>=0.0.2

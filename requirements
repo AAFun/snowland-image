@@ -1,5 +1,0 @@
-opencv-python==3.4.1.15
-numpy>=1.0.0
-scikit-image>=0.13
-matplotlib>=2.1.2
-wand>=0.4.4
