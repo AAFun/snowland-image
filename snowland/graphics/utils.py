@@ -343,3 +343,40 @@ def min_rotate_rect(hull: np.ndarray, cmp: str = 'a', eps=1e-10):
         return min_rotate_rect_a(hull, eps)
     else:
         return min_rotate_rect_c(hull, eps)
+
+
+def get_angle_rad(a, b):
+    """
+    a, b 为一维向量， 多点会错！！！
+    返回 向量a和b之间的夹角， 值域是 -pi ~ pi
+    """
+    a = npa(a)
+    b = npa(b)
+    norm_a = npl.norm(a, axis=1) if len(a.shape) == 2 else npl.norm(a)
+    norm_b = npl.norm(b, axis=1) if len(b.shape) == 2 else npl.norm(b)
+    # 单位化（可以不用这一步）
+    # a = a / norm_a  # 不能写成 a /= norm_a
+    # b = b / norm_b  # 不能写成 b /= norm_b
+    # 夹角cos值
+    cos_ = np.dot(a, b) / (norm_a * norm_b)
+    # 夹角sin值
+    sin_ = np.cross(a, b) / (norm_a * norm_b)
+    arctan2_ = np.arctan2(sin_, cos_)
+    return arctan2_
+
+
+def get_angle_degree(a: (list, np.ndarray), b: (list, np.ndarray)):
+    """
+    返回量向量之间的夹角，值域是 0~180，单位是度
+    """
+    # 初始化向量
+    degree = np.rad2deg(get_angle_rad(a, b))
+    return np.abs(degree)
+
+
+def get_rotate_angle_degree(v1, v2):
+    """
+    v1旋转到v2经历的角度， 值域0~360, 单位是度
+    """
+    return np.rad2deg(get_angle_rad(v1, v2)) % 360
+

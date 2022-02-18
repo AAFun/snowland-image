@@ -22,6 +22,8 @@ __all__ = [
     'Graphic',
     'LineString',
     'Point',
+    'MultiLineString',
+    'MultiPoint',
     'Shape',
     'Stereographic',
     'UnitVector',
@@ -174,7 +176,6 @@ class Vector2(Vector):
         return np.rad2deg(Vector2.get_angle_pi(v1, v2)) % 360
 
 
-
 class Vector3(Vector):
     pass
 
@@ -240,6 +241,18 @@ class Point(Graphic):
         return "Point <" + ', '.join(itor) + ">"
 
 
+class MultiPoint(Graphic):
+    def __init__(self, p):
+        if isinstance(p, MultiPoint):
+            self.p = p
+        else:
+            self.p = npa(p)
+
+    def __str__(self):
+        itor = [str(_) for _ in self.p]
+        return "MultiPoint <" + ', '.join(itor) + ">"
+
+
 class LineString(Graphic):
     def __init__(self, X=None):
         if isinstance(X, LineString):
@@ -253,8 +266,8 @@ class LineString(Graphic):
 
     def length(self, metric='euclidean', *args, **kwargs):
         m, n = self.X.shape
-        return np.sum(
-            [pdist(self.X[ind:ind + 2, :], metric=metric, *args, **kwargs) for ind in range(m - 1)])
+        return sum(
+            pdist(self.X[ind:ind + 2, :], metric=metric, *kwargs) for ind in range(m - 1))
 
     def is_ring(self, eps=1e-8):
         """
@@ -262,6 +275,18 @@ class LineString(Graphic):
         :return:
         """
         return equals_zero_all(self.X[0, :] - self.X[-1, :], eps=eps)
+
+
+class MultiLineString(Graphic):
+    def __init__(self, X=None):
+        if isinstance(X, MultiLineString):
+            self.X = X.X
+        else:
+            if len(X) == 0:
+                X = []
+            elif isinstance(X[0], Point):
+                X = [each.p for each in X]
+            self.X = npa(X)
 
 
 class Shape(Graphic):

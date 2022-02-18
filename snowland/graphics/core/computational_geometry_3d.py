@@ -10,9 +10,9 @@
 from abc import abstractmethod
 
 from scipy.spatial.distance import pdist
-from skimage.draw.draw import *
+import numpy as np
 
-from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape, Stereograph
+from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape
 from snowland.graphics.core.computational_geometry_base import UNITVECTORZ
 
 npa = np.array

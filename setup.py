@@ -41,5 +41,10 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Topic :: Software Development :: Libraries'
     ],
-    install_requires=load_install_requires()
+    install_requires=load_install_requires(),
+    extras_require={
+        'gis_tool': load_install_requires("optional-requirements-qgis.txt"),
+        'database_tool': load_install_requires("optional-requirements-database.txt")
+
+    }
 )

@@ -15,7 +15,7 @@ def sketch(img, threshold=15):
     """
     素描画生成
     param img: Image实例
-  param threshold: 介于0到100
+    param threshold: 介于0到100
     :return:
     """
     if threshold < 0:

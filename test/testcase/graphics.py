@@ -10,6 +10,7 @@
 
 import unittest
 from astartool.project import std_logging
+from snowland.graphics.core.computational_geometry_2d import *
 
 
 class TestLine2D(unittest.TestCase):
@@ -32,4 +33,12 @@ class TestLine2D(unittest.TestCase):
         pass
 
 
+class TestComputationalGeometry2D(unittest.TestCase):
 
+    def test_square(self):
+        ps = [(0, 0), (0, 1), (1, 1), (1, 0), (0, 0)]
+        square = Square(ps)
+        self.assertTrue(isinstance(square, Diamond))
+        self.assertTrue(isinstance(square, Rectangle))
+        self.assertEqual(square.area(), 1)
+        self.assertEqual(square.girth(), 4)

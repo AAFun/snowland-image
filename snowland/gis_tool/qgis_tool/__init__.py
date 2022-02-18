@@ -1,6 +1,8 @@
 
 from qgis.core import QgsGeometry
-from snowland.qgis_tool.qgis_util import vector, vector_end, vector_start, points, pointsXY, start_pointXY, end_pointXY
+
+from snowland.gis_tool.qgis_tool.qgis_util import vector, vector_end, vector_start, points, pointsXY, start_pointXY, end_pointXY
+from snowland.gis_tool.qgis_tool import distance_area, qgis_util
 
 QgsGeometry.points = points
 QgsGeometry.pointsXY = pointsXY

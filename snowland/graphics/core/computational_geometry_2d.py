@@ -7,10 +7,14 @@
 # @time:
 # @Software: PyCharm
 
+from typing import Iterable
+
+
 from scipy.spatial.distance import pdist, cdist
 import numpy as np
 
-from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape
+from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape, MultiPoint
+from snowland.graphics.utils import get_angle_rad
 
 npa = np.array
 npm = np.mat
@@ -31,6 +35,7 @@ __all__ = [
     'Triangle'
 ]
 
+
 class Point2D(Point):
     def __init__(self, p=None, x=None, y=None):
         if x is not None and y is not None:
@@ -43,7 +48,7 @@ class Point2D(Point):
         return self.p[0]
 
     @x.setter
-    def set_x(self, px):
+    def x(self, px):
         self.p[0] = px
 
     @property
@@ -51,8 +56,29 @@ class Point2D(Point):
         return self.p[1]
 
     @y.setter
-    def set_y(self, py):
+    def y(self, py):
         self.p[1] = py
+
+
+class MultiPoint2D(MultiPoint):
+    def __init__(self, points):
+        super().__init__(points)
+        assert self.p.shape[1] == 2
+
+
+class MultiPolygon2D(Shape):
+
+    def __init__(self, polygons):
+        if isinstance(polygons, MultiPolygon2D):
+            self.polygons = polygons.polygons
+        elif isinstance(polygons, Iterable):
+            self.polygons = [Polygon(p) for p in polygons]
+
+    def area(self):
+        return sum(p.area() for p in self.polygons)
+
+    def girth(self):
+        return sum(p.girth() for p in self.polygons)
 
 
 class LineString2D(LineString):
@@ -123,10 +149,11 @@ class Polygon(Shape):
     def without_holes(self):
         return self.holes is None or not self.holes
 
-    def is_convex(self):
+    def is_convexhull(self):
         if not self.without_holes():
             return False
         # TODO, check
+        raise NotImplementedError
 
 
 class PolygonWithoutHoles(Polygon):
@@ -139,6 +166,7 @@ class PolygonWithoutHoles(Polygon):
         :return:
         """
         # TODO 计算面积
+        raise NotImplementedError
 
     def girth(self):
         """
@@ -171,16 +199,24 @@ class Triangle(ConvexPolygon):
     """
     三角形
     """
-    pass
+    def __init__(self, p):
+        super().__init__(p)
+        assert len(self.p) == 3
 
 
 class Rectangle(ConvexPolygon):
-    pass
+    def __init__(self, p, *args, **kwargs):
+        super().__init__(p)
+        assert len(self.p) == 4
+        vectors = self.p[1:] - self.p[:-1]
+        for vi, vj in zip(vectors[:-1], vectors[1:]):
+            assert np.isclose(abs(get_angle_rad(vi, vj) * 2), np.pi)
 
 
 class Diamond(ConvexPolygon):
-    def __init__(self, p):
+    def __init__(self, p, *args, **kwargs):
         super(PolygonWithoutHoles, self).__init__(p, holes=None)
+        assert len(self.p) == 4
         m, n = self.p.shape
         dist = [pdist(self.p[ind:ind + 2, :]) for ind in range(m - 1)]
         d = cdist(self.p[:1, :], self.p[-1:, :])
@@ -194,7 +230,6 @@ class Square(Rectangle, Diamond):
 
     def __init__(self, p, eps=1e-8, *args, **kwargs):
         super(Square, self).__init__(p, *args, **kwargs)
-        # TODO 判断方形
 
 
 class Ellipse(Shape):
@@ -230,5 +265,5 @@ class Circle(Ellipse):
         return self.a
 
     @r.setter
-    def set_r(self, r):
-        self.a = self.b = r
+    def r(self, radius):
+        self.a = self.b = radius

@@ -8,4 +8,3 @@
 # @Software: PyCharm
 
 
-from snowland.graphics import solid_geometry

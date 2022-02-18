@@ -9,9 +9,7 @@
 
 import sys
 import unittest
-from astartool.project import std_logging
-from astartool.number import equals_zero
-from qgis.core import QgsDistanceArea, QgsUnitTypes, QgsPointXY
+
 import pathlib
 
 this_file = pathlib.Path(__file__)
@@ -20,9 +18,23 @@ path = str(path_pathlib)
 print("path:", path)
 
 if path not in sys.path:
-    sys.path.append(path)
+    sys.path.insert(0, path)
 
-from snowland.qgis_tool import haversine
+pathlib_snowland = path_pathlib / "snowland"
+path_snowland = str(pathlib_snowland)
+
+if path_snowland not in sys.path:
+    sys.path.insert(0, path_snowland)
+
+import numpy as np
+from astartool.project import std_logging
+from astartool.number import equals_zero
+from qgis.core import QgsDistanceArea, QgsUnitTypes, QgsPointXY
+
+npa = np.array
+
+# from snowland.gis_tool.qgis_tool import distance_area
+from snowland.gis_tool import haversine, nds
 
 
 class TestHaversine(unittest.TestCase):
@@ -47,7 +59,7 @@ class TestHaversine(unittest.TestCase):
 
     @std_logging()
     def setUp(self):
-        Ellipsoid = (haversine.EARTH_REDIUS * 1000, haversine.EARTH_REDIUS * 1000)
+        Ellipsoid = (haversine.EARTH_RADIUS * 1000, haversine.EARTH_RADIUS * 1000)
         disClass = QgsDistanceArea()
         disClass.setEllipsoid(Ellipsoid[0], Ellipsoid[1])
 
@@ -69,7 +81,7 @@ class TestHaversine(unittest.TestCase):
         line = self.disClass.measureLine(p1_pointxy, p2_pointxy)
         qgis_meters = self.disClass.convertLengthMeasurement(line, QgsUnitTypes.DistanceMeters)
         haversine_meters = self.module.haversine_metres(*p1_pointxy, *p2_pointxy)
-        self.assertTrue(equals_zero(qgis_meters - haversine_meters, 1e-4))  # 毫米量级
+        self.assertTrue(np.isclose(qgis_meters - haversine_meters, 0))  # 毫米量级
 
     def test_2(self):
         """
@@ -82,7 +94,7 @@ class TestHaversine(unittest.TestCase):
         line = self.disClass.measureLine(p1_pointxy, p2_pointxy)
         qgis_meters = self.disClass.convertLengthMeasurement(line, QgsUnitTypes.DistanceMeters)
         haversine_meters = self.module.haversine_metres(*p1_pointxy, *p2_pointxy)
-        self.assertTrue(equals_zero(qgis_meters - haversine_meters, 1e-4))  # 毫米量级
+        self.assertTrue(np.isclose(qgis_meters - haversine_meters, 0))  # 毫米量级
 
     def test_3(self):
         """
@@ -95,7 +107,7 @@ class TestHaversine(unittest.TestCase):
         line = self.disClass.measureLine(p1_pointxy, p2_pointxy)
         qgis_meters = self.disClass.convertLengthMeasurement(line, QgsUnitTypes.DistanceMeters)
         haversine_meters = self.module.haversine_metres(*p1_pointxy, *p2_pointxy)
-        self.assertTrue(equals_zero(qgis_meters - haversine_meters, 1e-4))  # 毫米量级
+        self.assertTrue(np.isclose(qgis_meters - haversine_meters, 0))  # 毫米量级
 
     def test_4(self):
         """
@@ -108,7 +120,7 @@ class TestHaversine(unittest.TestCase):
         line = self.disClass.measureLine(p1_pointxy, p2_pointxy)
         qgis_meters = self.disClass.convertLengthMeasurement(line, QgsUnitTypes.DistanceMeters)
         haversine_meters = self.module.haversine_metres(*p1_pointxy, *p2_pointxy)
-        self.assertTrue(equals_zero(qgis_meters - haversine_meters, 1e-4))  # 毫米量级
+        self.assertTrue(np.isclose(qgis_meters - haversine_meters, 0))  # 毫米量级
 
     def test_5(self):
         """
@@ -122,4 +134,15 @@ class TestHaversine(unittest.TestCase):
         qgis_meters = self.disClass.convertLengthMeasurement(line, QgsUnitTypes.DistanceMeters)
         haversine_meters = self.module.haversine_metres(*p1_pointxy, *p2_pointxy)
         print(qgis_meters, haversine_meters)
-        self.assertTrue(equals_zero(qgis_meters - haversine_meters, 1e-4))  # 毫米量级
+        self.assertTrue(np.isclose(qgis_meters - haversine_meters, 0))  # 毫米量级
+
+
+class TestNDS(unittest.TestCase):
+    def test_nds_array(self):
+        x = [119.135671785614] * 20
+        y = [34.5738355769335] * 20
+        z = nds.get_tile_id(x, y, 13)
+
+        self.assertEqual(len(z), 20)
+        for each in z:
+            self.assertEqual(each, 557386867)

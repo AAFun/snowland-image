@@ -8,14 +8,10 @@
 # @Software: PyCharm
 
 
-import math
 import numpy as np
-from scipy.spatial.distance import cdist, pdist, euclidean
 
+from snowland.graphics.core.analytic_geometry_base import Line
 from snowland.graphics.core.computational_geometry_2d import Point2D
-from snowland.graphics.core.computational_geometry_3d import Point3D
-from snowland.graphics.core.computational_geometry_base import Vector, Vector3
-from snowland.graphics.core.analytic_geometry_base import Line, Surface
 
 npa = np.array
 npl = np.linalg

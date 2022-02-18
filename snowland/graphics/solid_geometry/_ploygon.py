@@ -16,6 +16,7 @@ npl = np.linalg
 npa = np.array
 npr = np.random
 
+
 def __in_polygon(p: Point2D, polygon):
     """
     判断点是否在多边形内（不包含边上）
