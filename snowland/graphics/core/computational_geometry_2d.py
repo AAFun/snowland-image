@@ -84,7 +84,7 @@ class MultiPolygon2D(Shape):
 class LineString2D(LineString):
     def __init__(self, X=None):
         super(LineString2D, self).__init__(X=X)
-        assert self.X.shape[0] is 2
+        assert self.X.shape[0] == 2
 
 
 class LineSegment2D(LineString2D):

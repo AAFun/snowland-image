@@ -1,7 +1,7 @@
 snowland-image
 ==============
 
-|version| |gitee| |github| |download| |wheel| |status|
+|version| |gitee| |github| |download| |wheel| |status| |licence|
 
 
 snowland
@@ -11,6 +11,7 @@ snowland
 - gis_tool: gis相关功能
 - graphics: 基本的几何图形定义
 - images: 简单的图像处理
+
 
 参考资料
 ~~~~~~~~
@@ -30,3 +31,4 @@ snowland
 .. |wheel| image:: https://img.shields.io/pypi/wheel/snowland-image.svg
    :target: https://pypi.python.org/pypi/snowland-image
 .. |status| image:: https://img.shields.io/pypi/status/snowland-image.svg
+.. |licence| image:: https://img.shields.io/pypi/l/astar-devopstool.svg

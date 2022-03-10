@@ -37,7 +37,7 @@ def haversine_metres(Olon, Olat, Dlon, Dlat, earth_radius=EARTH_RADIUS):
     return haversine_centimetres(Olon, Olat, Dlon, Dlat, earth_radius) / 100
 
 
-def length_centimetres(Olon, Olat, ):
+def length_centimetres(Olon, Olat, earth_redius=EARTH_RADIUS):
     """
     通过两经纬度点计算地表实际距离
 
@@ -49,7 +49,7 @@ def length_metres(Olon, Olat, earth_radius=EARTH_RADIUS):
     """
     通过两经纬度点计算地表实际距离
     """
-    return np.sum(haversine_metres(Olon[:-1], Olat[:-1], Olon[1:], Olat[1:]))
+    return np.sum(haversine_metres(Olon[:-1], Olat[:-1], Olon[1:], Olat[1:], earth_radius))
 
 
 def haversine_centimetres_by_points(p1, p2, earth_radius=EARTH_RADIUS):
@@ -69,7 +69,7 @@ def haversine_centimetres_by_points(p1, p2, earth_radius=EARTH_RADIUS):
 
 
 def haversine_metres_by_points(p1, p2, earth_radius=EARTH_RADIUS):
-    return haversine_centimetres_by_points(p1, p2) / 100
+    return haversine_centimetres_by_points(p1, p2, earth_radius) / 100
 
 
 def haversine_metres_by_two_points(p1, p2, earth_radius=EARTH_RADIUS):

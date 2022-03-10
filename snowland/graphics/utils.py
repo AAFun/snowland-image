@@ -380,3 +380,9 @@ def get_rotate_angle_degree(v1, v2):
     """
     return np.rad2deg(get_angle_rad(v1, v2)) % 360
 
+
+def get_rotate_angle_rad(v1, v2):
+    """
+    v1旋转到v2经历的角度， 值域0~2*pi, 单位是弧度
+    """
+    return get_angle_rad(v1, v2) % (2 * np.pi)

@@ -55,7 +55,10 @@ def nds_to_morton(nds_lon, nds_lat):
     return morton_code
 
 
-def get_tile_id(lon, lat, level=13):
+def get_tile_id(lon: np.ndarray, lat: np.ndarray, level=13):
+    """
+    获得level层的瓦片
+    """
     ndsLon = dms_to_nds(lon)
     ndsLat = dms_to_nds(lat)
 

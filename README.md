@@ -5,6 +5,7 @@
 [![github](https://img.shields.io/github/stars/astar-club/scikit-snowland)](https://img.shields.io/github/stars/astar-club/scikit-snowland)
 [![download](https://img.shields.io/pypi/dm/snowland-image.svg)](https://pypi.org/project/snowland-image)
 [![wheel](https://img.shields.io/pypi/wheel/snowland-image.svg)](https://pypi.python.org/pypi/snowland-image)
+![licence](https://img.shields.io/pypi/l/astar-devopstool.svg)
 ![status](https://img.shields.io/pypi/status/snowland-image.svg)
 
 
