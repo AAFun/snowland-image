@@ -9,12 +9,11 @@
 
 from typing import Iterable
 
-
-from scipy.spatial.distance import pdist, cdist
+from astartool.error import ParameterError
+from scipy.spatial.distance import pdist, cdist, euclidean
 import numpy as np
-
 from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape, MultiPoint
-from snowland.graphics.utils import get_angle_rad
+from snowland.graphics.utils import get_angle_rad, get_intersect_by_two_point, get_lines
 
 npa = np.array
 npm = np.mat
@@ -84,7 +83,44 @@ class MultiPolygon2D(Shape):
 class LineString2D(LineString):
     def __init__(self, X=None):
         super(LineString2D, self).__init__(X=X)
-        assert self.X.shape[0] == 2
+        assert self.X.shape[1] == 2
+
+    def length(self, metric=euclidean, *args, **kwargs):
+        return sum(metric(u, v) for u, v in zip(self.X[:-1], self.X[1:]))
+
+    def intersects(self, other):
+        if isinstance(other, LineSegment2D):
+            lines = get_lines(self.X)
+            point_1 = np.hstack((other.X[:-1, :], [[1]])).T
+            point_2 = np.hstack((other.X[1:, :], [[1]])).T
+            flag1 = (lines @ point_1)
+            flag2 = (lines @ point_2)
+            if np.all(flag1 * flag2 > 0):
+                lines = get_lines(other.X)
+                point_1 = np.hstack((self.X[:-1, :], np.ones((len(self.X) - 1, 1)))).T
+                point_2 = np.hstack((self.X[1:, :], np.ones((len(self.X) - 1, 1)))).T
+                flag1 = (lines @ point_1)
+                flag2 = (lines @ point_2)
+                if np.all(flag1 * flag2 > 0):
+                    return False
+            for p1, p2 in zip(self.X[:-1], self.X[1:]):
+                if get_intersect_by_two_point(p1, p2, other.X[0], other.X[1]) != (None, None):
+                    return True
+            return False
+        elif isinstance(other, LineString2D):
+            for p1, p2 in zip(self.X[:-1], self.X[1:]):
+                for p3, p4 in zip(other.X[:-1], other.X[1:]):
+                    if get_intersect_by_two_point(p1, p2, p3, p4) != (None, None):
+                        return True
+            return False
+        elif isinstance(other, np.ndarray):
+            for p1, p2 in zip(self.X[:-1], self.X[1:]):
+                for p3, p4 in zip(other[:-1], other[1:]):
+                    if get_intersect_by_two_point(p1, p2, p3, p4) != (None, None):
+                        return True
+            return False
+        else:
+            raise ParameterError("type of other error")
 
 
 class LineSegment2D(LineString2D):
@@ -98,14 +134,23 @@ class LineSegment2D(LineString2D):
         assert X is not None
         super(LineSegment2D, self).__init__(X)
 
-    def length(self, metric='euclidean', *args, **kwargs):
-        return np.sum(pdist(self.X, metric, *args, **kwargs))
+    def intersection(self, other):
+        if isinstance(other, LineSegment2D):
+            other = other.X
+        return Point2D(get_intersect_by_two_point(self.X[0], self.X[1], other[0], other[1]))
+
+    def intersects(self, other):
+        if isinstance(other, LineSegment2D):
+            other = other.X
+        return Point2D(get_intersect_by_two_point(self.X[0], self.X[1], other[0], other[1])) != (None, None)
 
 
 class Polygon(Shape):
     def __init__(self, p=None, holes=None):
         self.p = np.zeros((0, 2))
-        if p:
+        if isinstance(p, Polygon):
+            self.p = p.p
+        elif isinstance(p, (list, np.ndarray)):
             if isinstance(p, np.ndarray):
                 self.p = p
             else:
@@ -182,17 +227,10 @@ class ConvexPolygon(PolygonWithoutHoles):
     def area(self):
         # 面积
         # 参考 https://blog.csdn.net/cymy001/article/details/81366033
-        points = self.p
-        area = 0
+        points = np.vstack((self.p, self.p[0]))
         if len(points) < 3:
             raise Exception("error")
-
-        for i, p1 in enumerate(points[:, :]):  # 当i = 0时首尾计算面积
-            p2 = points[i - 1]
-            triArea = (p1[0] * p2[1] - p2[0] * p1[1]) / 2
-            # print(triArea)
-            area += triArea
-        return abs(area)
+        return np.sum(np.fabs(points[:-1, 0] * points[1:, 1] - points[1:, 0] * points[:-1, 1])) / 2
 
 
 class Triangle(ConvexPolygon):

@@ -226,6 +226,9 @@ def alignment(linestring1: np.ndarray, linestring2: np.ndarray, metric=euclidean
 
 
 def rotate_geometry(poly: np.ndarray, rad):
+    """
+    二维旋转rad弧度
+    """
     matrix = np.asarray([[np.cos(rad), np.sin(rad)],
                          [-np.sin(rad), np.cos(rad)]])
     new_poly = np.dot(poly, matrix)
@@ -345,7 +348,7 @@ def min_rotate_rect(hull: np.ndarray, cmp: str = 'a', eps=1e-10):
         return min_rotate_rect_c(hull, eps)
 
 
-def get_angle_rad(a, b):
+def get_angle_rad(a, b, eps=1e-12):
     """
     a, b 为一维向量， 多点会错！！！
     返回 向量a和b之间的夹角， 值域是 -pi ~ pi
@@ -358,11 +361,33 @@ def get_angle_rad(a, b):
     # a = a / norm_a  # 不能写成 a /= norm_a
     # b = b / norm_b  # 不能写成 b /= norm_b
     # 夹角cos值
+    if -eps < norm_a < eps or -eps < norm_b < eps:
+        return np.nan
     cos_ = np.dot(a, b) / (norm_a * norm_b)
     # 夹角sin值
     sin_ = np.cross(a, b) / (norm_a * norm_b)
     arctan2_ = np.arctan2(sin_, cos_)
     return arctan2_
+
+
+def get_intersect_by_two_point(p1, p2, p3, p4):
+    """
+    判断线段是否相交
+    """
+    x1, y1 = p1
+    x2, y2 = p2
+    x3, y3 = p3
+    x4, y4 = p4
+    b1 = (y2 - y1) * x1 + (x1 - x2) * y1
+    b2 = (y4 - y3) * x3 + (x3 - x4) * y3
+    D = (x2 - x1) * (y4 - y3) - (x4 - x3) * (y2 - y1)
+    D1 = b2 * (x2 - x1) - b1 * (x4 - x3)
+    D2 = b2 * (y2 - y1) - b1 * (y4 - y3)
+    x, y = D1 / D, D2 / D
+    if middle(x, x1, x2) and middle(x, x3, x4) and middle(y, y1, y2) and middle(y, y3, y4):
+        return x, y
+    else:
+        return None, None
 
 
 def get_angle_degree(a: (list, np.ndarray), b: (list, np.ndarray)):
