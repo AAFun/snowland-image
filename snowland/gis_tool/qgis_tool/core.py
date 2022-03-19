@@ -1,8 +1,9 @@
 from typing import List
 
 import numpy as np
+from qgis.core import QgsPoint, QgsLineString, QgsFeature, QgsSpatialIndex
+
 from snowland.gis_tool.qgis_tool import QgsGeometry
-from qgis.core import QgsPoint, QgsLineString, QgsFeature
 
 
 class GeometryStructure:
@@ -60,3 +61,50 @@ class GeometryStructure:
     def reset_geometry(self, geometry: QgsGeometry):
         self.geometry = geometry
         self.geometry_points = geometry.points()
+
+
+class Node:
+    def __init__(self, data, opposite=None, side=None, right=None):
+        self.data = data
+        self.opposite, self.side, self.right = opposite, side, right
+
+
+class TileRoadMap(dict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for k in self:
+            self[k].sort(key=lambda x: -x['lane_no'])
+
+    @staticmethod
+    def init_by_features(features):
+        waitHandlemap = TileRoadMap()
+        for curIndex, feature in enumerate(features):
+            key = (feature['tile_id'], feature['road_id'])
+            if key in waitHandlemap:
+                waitHandlemap[key].append(feature)
+            else:
+                waitHandlemap[key] = [feature]
+        for k in waitHandlemap:
+            waitHandlemap[k].sort(key=lambda x: -x['lane_no'])
+        return waitHandlemap
+
+
+class TrafficIntersection:
+
+    def __init__(self):
+        self.nodes = {}
+
+    @staticmethod
+    def init_by_features(features: List[QgsFeature], buffer_size=1*D2M):
+        if not isinstance(features, List):
+            features = list(features)
+        tile_road_map = TileRoadMap.init_by_features(features)
+        zero_index = QgsSpatialIndex()
+        last_index = QgsSpatialIndex()
+        for v in tile_road_map.values():
+            zero_index.addFeature(v[0])
+            zero_index.addFeature(v[-1])
+
+        nodes = {k: Node(data=(k, v)) for k, v in tile_road_map.items()}
+        for k, v in tile_road_map.items():
+            v[0].geometry()

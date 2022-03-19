@@ -204,7 +204,7 @@ class Graphic(metaclass=ABCMeta):
 class Point(Graphic):
     def __init__(self, p):
         if isinstance(p, Point):
-            self.p = p
+            self.p = p.p
         else:
             self.p = npa(p)
 

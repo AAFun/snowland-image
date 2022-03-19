@@ -36,7 +36,7 @@ __all__ = [
 ]
 
 
-def on_polygon_edge(p: Point2D, polygon: (Polygon, list), eps=1e-8):
+def __on_polygon_edge(p: Point2D, polygon: (Polygon, list), eps=1e-8):
     p = Point2D(p)
     polygon = Polygon(polygon)
     for point in polygon.p:
@@ -59,6 +59,31 @@ def on_polygon_edge(p: Point2D, polygon: (Polygon, list), eps=1e-8):
             if on_polygon_edge(p, hole):
                 return True
     return False
+
+
+def on_polygon_edge(point, polygon: (Polygon, np.ndarray)):
+    """
+    判断点是否在多边形内
+    :param point:
+    :param polygon:
+    :return:
+    """
+    if isinstance(polygon, (list, np.ndarray)):
+        polygon = Polygon(polygon)
+    if isinstance(point, Point2D):
+        return __on_polygon_edge(point, polygon)
+    if isinstance(point, np.ndarray) and len(point.shape) == 1:
+        return __on_polygon_edge(Point2D(point), polygon)
+    else:
+        # 多个点判断， 返回多个值
+        if isinstance(point[0], Point2D):
+            return npa([__on_polygon_edge(p, polygon) for p in point])
+        if isinstance(point[0], np.ndarray) and len(point[0].shape) == 1:
+            return npa([__on_polygon_edge(Point2D(p), polygon) for p in point])
+        else:
+            # 一个点的list/tuple
+            return npa([__on_polygon_edge(Point2D(p), polygon) for p in point])
+
 
 
 def __in_polygon(p: Point2D, polygon: Polygon):
@@ -307,7 +332,7 @@ if __name__ == '__main__':
     r = np.random.random(1000)
     theta = np.random.random(1000) * 2 * np.pi
     ps = np.vstack((r * np.cos(theta), r * np.sin(theta))).T
-    hull = concave_hull(ps, k=3)
+    hull = convex_hull(ps)
     plt.plot(np.hstack((hull.p[:, 0], hull.p[0, 0])), np.hstack((hull.p[:, 1], hull.p[0, -1])), 'b')
     plt.plot(ps[:, 0], ps[:, 1], 'r*')
     plt.show()

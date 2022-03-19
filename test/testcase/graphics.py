@@ -13,7 +13,7 @@ import unittest
 import numpy as np
 from astartool.project import std_logging
 from snowland.graphics.core.computational_geometry_2d import *
-from snowland.graphics.solid_geometry._ploygon import in_polygon, on_polygon_edge
+from snowland.graphics.solid_geometry import in_polygon, on_polygon_edge
 npa = np.array
 
 

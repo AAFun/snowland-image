@@ -19,10 +19,10 @@ from snowland.gis_tool.haversine import length_metres
 npa = np.array
 npl = np.linalg
 
-
 __all__ = [
     'points',
     'pointsXY',
+    'pointsZM',
     'vector',
     'vector_start',
     'vector_end',
@@ -91,6 +91,11 @@ class GeometryStructure:
 def points(geometry: QgsGeometry):
     vertices = geometry.vertices()
     return npa([(v.x(), v.y(), v.z()) for v in vertices])
+
+
+def pointsZM(geometry: QgsGeometry):
+    vertices = geometry.vertices()
+    return npa([(v.x(), v.y(), v.z(), v.m()) for v in vertices])
 
 
 def pointsXY(geometry: QgsGeometry):
