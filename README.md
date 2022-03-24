@@ -1,7 +1,7 @@
 # snowland-image
 
 [![version](https://img.shields.io/pypi/v/snowland-image.svg)](https://pypi.python.org/pypi/snowland-image)
-[![gitee](https://gitee.com/hoops/snowland-img2cartoon/badge/star.svg)](https://gitee.com/hoops/snowland-img2cartoon/stargazers)
+[![gitee](https://gitee.com/hoops/snowland-image/badge/star.svg)](https://gitee.com/hoops/snowland-image/stargazers)
 [![github](https://img.shields.io/github/stars/astar-club/scikit-snowland)](https://img.shields.io/github/stars/astar-club/scikit-snowland)
 [![download](https://img.shields.io/pypi/dm/snowland-image.svg)](https://pypi.org/project/snowland-image)
 [![wheel](https://img.shields.io/pypi/wheel/snowland-image.svg)](https://pypi.python.org/pypi/snowland-image)

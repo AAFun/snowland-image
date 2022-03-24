@@ -4,14 +4,10 @@ from typing import Union, List
 
 import numpy as np
 
+from snowland.gis_tool import NDS_180_DEGREES, NDS_360_DEGREES, NDS_90_DEGREES, RULE_MORTON_TO_LONLAT
+
 npl = np.linalg
 npa = np.array
-
-RULE_MORTON = (1 << 32) / 360.0
-RULE_MORTON_TO_LONLAT = 360.0 / (1 << 32)
-NDS_90_DEGREES = 0x3fffffff
-NDS_180_DEGREES = 0x7fffffff
-NDS_360_DEGREES = 4294967295
 
 
 def dms_to_nds(dms: Union[np.ndarray, List, float]):
