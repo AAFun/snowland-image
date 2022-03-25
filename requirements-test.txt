@@ -4,7 +4,7 @@ scipy>=1.0.0
 scikit-image>=0.13
 matplotlib>=2.1.2
 snowland-pencildraw>=0.1.7
-astartool>=0.0.8
+astartool>=0.1
 lizard
 GDAL>=3.1.0
 Pillow>=5.2.0

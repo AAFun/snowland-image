@@ -9,8 +9,11 @@
 
 
 from setuptools import setup, find_packages
-from astartool.setuptool import load_install_requires
+from astartool.setuptool import load_install_requires, read_file
 from snowland import __version__
+import pathlib
+
+BASE_PATH = pathlib.Path(__file__).parent
 
 setup(
     name='snowland-image',
@@ -18,7 +21,7 @@ setup(
     description=(
         'toolkit for image'
     ),
-    long_description=open('README.rst', encoding='utf-8').read(),
+    long_description=read_file(BASE_PATH / 'README.rst'),
     author='A.Star',
     author_email='astar@snowland.ltd',
     maintainer='A.Star',

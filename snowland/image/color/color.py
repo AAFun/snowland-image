@@ -16,7 +16,6 @@ def rgb2ycbcr(img):
     origT = npa([[65.481, 128.553, 24.966], [-37.797, -74.203, 112], [112, -93.786, -18.214]])
     oriOffset = npa([[16], [128], [128]])
 
-    # if img.dtype.name == 'uint8':
     if isinstance(img, np.uint8):
         t = 1
         offset = 1.0 / 255
@@ -24,7 +23,6 @@ def rgb2ycbcr(img):
     elif isinstance(img, (np.float, np.float64, float)):
         t = 1.0 / 255
         offset = 1.0 / 255
-    # elif img.dtype.name == 'uint16':
     elif isinstance(img, np.uint16):
         t = 257.0 / 65535
         offset = 257
@@ -44,15 +42,12 @@ def ycbcr2rgb(img):
     origT = npa([[65.481, 128.553, 24.966], [-37.797, -74.203, 112], [112, -93.786, -18.214]])
     oriOffset = npa([[16], [128], [128]])
     tinv = np.linalg.inv(origT)
-    # if img.dtype.name == 'uint8':
     if isinstance(img, np.uint8):
         t = 255
         offset = 255
     elif isinstance(img, (np.float, np.float64)):
-    # elif img.dtype.name == 'float64':
         t = 255
         offset = 1
-    # elif img.dtype.name == 'uint16':
     elif isinstance(img, np.uint16):
         t = 65535 / 257.0
         offset = 65535

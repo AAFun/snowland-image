@@ -11,7 +11,7 @@ snowland
 - gis_tool: gis相关功能
 - graphics: 基本的几何图形定义
 - images: 简单的图像处理
-
+- plot_helper: matplotlib的简单封装
 
 参考资料
 ~~~~~~~~

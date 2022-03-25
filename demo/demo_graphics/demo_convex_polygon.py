@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-from functools import reduce
 
 import numpy as np
-from astartool.number import equals_zero_all
-from scipy.spatial.ckdtree import cKDTree
-import matplotlib
-
 from matplotlib import pyplot as plt
-from snowland.graphics.core.computational_geometry_2d import PolygonWithoutHoles, LineString2D, LineSegment2D
-from snowland.graphics.utils import get_rotate_angle_degree, get_angle_degree
-from snowland.graphics.utils import rotate_geometry
+from scipy.spatial.ckdtree import cKDTree
 from scipy.spatial.distance import euclidean
-from snowland.graphics.solid_geometry import on_polygon_edge, in_polygon, get_bottom_point_index
-from snowland.plot_helper.plot_helper import plot_line, plot_arrow
+
+from snowland.graphics.core.computational_geometry_2d import PolygonWithoutHoles
+from snowland.graphics.solid_geometry import get_bottom_point_index
+from snowland.graphics.utils import get_rotate_angle_degree
+from snowland.plot_helper.plot_helper import plot_arrow
+
 npl = np.linalg
 npa = np.array
 
@@ -21,7 +18,7 @@ def length(ps):
     return sum(euclidean(a, b) for a, b in zip(ps[:-1], ps[1:]))
 
 
-def concave_hull_line(lines, buffer_size=3.5*8.983152841195212e-06):
+def concave_hull_line(lines, buffer_size=3.5 * 8.983152841195212e-06):
     num_lines = len(lines)
     lines = [line for line in lines if length(line) > 0.1 * 1e-5]
     start_end_feature_map = {}
@@ -60,7 +57,7 @@ def concave_hull_line(lines, buffer_size=3.5*8.983152841195212e-06):
             if (ind == start_ind and not first_loop) or ((not used_list[ind]) and ind != i):
                 connect_line.append((ind, line))
         if len(connect_line) >= 1:
-            ind, each = min(connect_line, key=lambda x:get_rotate_angle_degree(ps[-2]-ps[-1], x[1][-1]-ps[-1]))
+            ind, each = min(connect_line, key=lambda x: get_rotate_angle_degree(ps[-2] - ps[-1], x[1][-1] - ps[-1]))
             if ind == start_ind and not first_loop:
                 break_flag = True
                 break
@@ -76,7 +73,7 @@ def concave_hull_line(lines, buffer_size=3.5*8.983152841195212e-06):
                 p_str = all_points[i_pb, 0], all_points[i_pb, 1]
                 if p_str == p:
                     continue
-                for ind, each in start_end_feature_map.get(p_str,[]):
+                for ind, each in start_end_feature_map.get(p_str, []):
                     if not used_list[ind]:
                         if ind == start_ind and not first_loop:
                             break_flag = True
@@ -92,13 +89,14 @@ def concave_hull_line(lines, buffer_size=3.5*8.983152841195212e-06):
                     break
             else:
                 # for-else
-                pbs = sorted(all_points[av_points, :], key=lambda x:get_rotate_angle_degree(current_line[-2]-end_point, x-end_point))
+                pbs = sorted(all_points[av_points, :],
+                             key=lambda x: get_rotate_angle_degree(current_line[-2] - end_point, x - end_point))
                 for pb in pbs:
                     p_str = pb[0], pb[1]
-                    if len(start_end_feature_map.get(p_str, [])) >=2:
+                    if len(start_end_feature_map.get(p_str, [])) >= 2:
                         continue
-                    break_flag=False
-                    for ind, each in start_end_feature_map.get(p_str,[]):
+                    break_flag = False
+                    for ind, each in start_end_feature_map.get(p_str, []):
                         if not used_list[ind]:
                             if ind == start_ind and not first_loop:
                                 break_flag = True
@@ -118,16 +116,6 @@ def concave_hull_line(lines, buffer_size=3.5*8.983152841195212e-06):
     ps = hull.p
     ps = np.vstack((ps, ps[0]))
     return ps
-    # if not(np.all(in_polygon(line_points, hull)) or np.all(on_polygon_edge(line_points, hull))):
-    #     return concave_hull_line(lines, eps, step, k + step)
-    # else:
-    #     ps = hull.p
-    #     ps = np.vstack((ps, ps[0]))
-    #     print(ind_list)
-    #     for i, ind in enumerate(ind_list):
-    #         plt.text(lines[ind][0, 0], lines[ind][0, 1], str(i))
-    #     return ps
-
 
 
 if __name__ == '__main__':
@@ -143,4 +131,3 @@ if __name__ == '__main__':
     ps = concave_hull_line(lines)
     plot_arrow(ps[:, 0], ps[:, 1], 'r+-')
     plt.show()
-
