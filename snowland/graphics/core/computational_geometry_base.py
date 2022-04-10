@@ -253,6 +253,15 @@ class MultiPoint(Graphic):
         return "MultiPoint <" + ', '.join(itor) + ">"
 
 
+class Line(Graphic, metaclass=ABCMeta):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def length(self, metric='euclidean', *args, **kwargs):
+        pass
+
+
 class LineString(Graphic):
     def __init__(self, X=None):
         if isinstance(X, LineString):

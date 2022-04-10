@@ -18,7 +18,7 @@ print("单位圆面积", unit_circle.area())
 print("单位圆周长", unit_circle.girth())
 print("单位圆圆心", unit_circle.centre)
 
-square = Square([[0,0], [0, 1], [1,1],[1, 0]])
+square = Square([[0, 0], [0, 1], [1, 1], [1, 0]])
 print("正方形面积", square.area())
 print("正方形周长", square.girth())
 

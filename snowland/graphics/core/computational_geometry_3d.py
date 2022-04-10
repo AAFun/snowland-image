@@ -9,10 +9,11 @@
 
 from abc import abstractmethod
 
+from astartool.number import equals_zero_all
 from scipy.spatial.distance import pdist
 import numpy as np
 
-from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape
+from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape, Stereographic
 from snowland.graphics.core.computational_geometry_base import UNITVECTORZ
 
 npa = np.array
@@ -75,6 +76,18 @@ class LineString3D(LineString):
     def __init__(self, X=None):
         super(LineString3D, self).__init__(X=X)
         assert self.X.shape[0] is 3
+
+    def length(self, metric='euclidean', *args, **kwargs):
+        m, n = self.X.shape
+        return sum(
+            pdist(self.X[ind:ind + 2, :], metric=metric, *kwargs) for ind in range(m - 1))
+
+    def is_ring(self, eps=1e-8):
+        """
+        判断是否成环
+        :return:
+        """
+        return equals_zero_all(self.X[0, :] - self.X[-1, :], eps=eps)
 
 
 class LineSegment3D(LineString3D):
@@ -225,7 +238,7 @@ class Circle3D(Ellipse3D):
         return 2 * self.r * np.pi
 
 
-class Vertebrae(Stereograph):
+class Vertebrae(Stereographic):
     """
     椎体
     """
@@ -275,7 +288,7 @@ class StraightCone(Vertebrae):
         return self.underside.area() + self.underside.r * np.sqrt(self.h * self.h + self.underside.r * self.underside.r)
 
 
-class Cylinder(Stereograph):
+class Cylinder(Stereographic):
     """
     柱体
     """
@@ -331,7 +344,7 @@ class StraightPrism(Cylinder):
         super(StraightPrism, self).__init__(underside, h, v, t=v)
 
 
-class StraightEllipsoid(Stereograph):
+class StraightEllipsoid(Stereographic):
     def __init__(self, a=1, b=1, c=1, p=(0, 0, 0)):
         # (x-x0)**2 / a**2 + (y-y0)**2 / b**2+(z-z0)**2 / c**2=1
         self.p = Point3D(p)

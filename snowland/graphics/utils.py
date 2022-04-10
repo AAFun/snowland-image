@@ -242,12 +242,7 @@ def bounding_box(poly: np.ndarray, eps=1e-10):
     # shape of min_rect: [4, 2]
     x_min, y_min = np.min(poly, axis=0)
     x_max, y_max = np.max(poly, axis=0)
-    min_rect = np.asarray([[x_min, y_min],
-                           [x_max, y_min],
-                           [x_max, y_max],
-                           [x_min, y_max]])
-    area = (x_max - x_min) * (y_max - y_min)
-    return min_rect, area
+    return npa([x_min, y_min]), (x_max - x_min), (y_max - y_min)
 
 
 def min_rotate_rect_a(hull: np.ndarray, eps=1e-10):
@@ -433,3 +428,12 @@ def get_point_by_rate_index(line: np.ndarray, meters, metric=euclidean):
     delta_meters = meters - s[ind]
     vector_line = line[1:] - line[:-1]
     return line[ind] + delta_meters / meters_all[ind] * vector_line[ind], ind
+
+
+def get_arc(o, r, theta1, theta2, length):
+    """
+    """
+    theta = np.linspace(theta1, theta2, length)
+    x = r * np.cos(theta) + o[0]
+    y = r * np.sin(theta) + o[1]
+    return x, y

@@ -8,6 +8,7 @@
 # @Software: PyCharm
 
 
+from astartool.number import equals_zero
 import numpy as np
 
 from snowland.graphics.core.analytic_geometry_base import Line
@@ -76,3 +77,22 @@ class Line2D(Line):
             return Point2D([-(self.b * other.c - self.c * other.b) / (other.a * self.b - self.a * other.b), \
                             (self.a * other.c - self.c * other.a) / (other.a * self.b - self.a * other.b)])
 
+    def get(self, x:(float, np.ndarray)=None, y:(float, np.ndarray)=None, eps=1e-10):
+        """
+        获得对应的取值
+        :param x: x值
+        :param y: y值
+        :param eps: 在此精度下认为是 0
+        :return:
+        """
+        assert (x is None) ^ (y is None), "x和y不全为None"
+        if x is None:
+            if equals_zero(self.a, eps):
+                return np.inf
+            else:
+                return (-self.c - self.b * y) / self.a
+        else:
+            if equals_zero(self.b, eps):
+                return np.inf
+            else:
+                return (-self.c - self.a * x) / self.b

@@ -12,14 +12,15 @@ from typing import Iterable
 from astartool.error import ParameterError
 from scipy.spatial.distance import pdist, cdist, euclidean
 import numpy as np
-from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape, MultiPoint
-from snowland.graphics.utils import get_angle_rad, get_intersect_by_two_point, get_lines
+from snowland.graphics.core.computational_geometry_base import Point, LineString, Shape, MultiPoint, Line
+from snowland.graphics.utils import get_angle_rad, get_intersect_by_two_point, get_lines, get_arc
 
 npa = np.array
 npm = np.mat
 
 
 __all__ = [
+    'Arc2D',
     'Circle',
     'ConvexPolygon',
     'Diamond',
@@ -305,3 +306,26 @@ class Circle(Ellipse):
     @r.setter
     def r(self, radius):
         self.a = self.b = radius
+
+
+class Arc2D(Line):
+    def __init__(self, centre, r, theta_start=-np.pi, theta_end=np.pi, direction=1):
+        super().__init__()
+        self.centre = centre
+        self.r = r
+        self.theta_start = theta_start
+        self.theta_end = theta_end
+        self.direction = direction
+
+        if self.direction > 0:
+            assert self.theta_start < self.theta_end
+        elif self.direction < 0:
+            assert self.theta_start > self.theta_end
+
+    def length(self, metric=euclidean, *args, **kwargs):
+        return np.abs(self.theta_end - self.theta_start) * self.r
+
+    def as_linestring2d(self, points_count=30):
+        x, y = get_arc(self.centre, self.r, self.theta_start, self.theta_end, points_count)
+        points = np.vstack((x, y)).T
+        return LineString2D(points)
