@@ -170,6 +170,43 @@ def move_distance(a, dist, flag):
     return x, y
 
 
+def simple_line(points=None, x: np.ndarray = None, y: np.ndarray = None, forward_point=8):
+    """
+    对一条线(x, y)进行化简，删除折返线
+    """
+    if x is not None and y is not None:
+        x_array = npa(x)
+        y_array = npa(y)
+        points = np.vstack((x_array, y_array)).T
+
+    length_points = len(points)
+    ps_index = np.empty(length_points, dtype=int)
+    i, cnt = 0, 0
+    ps = [points[0]]
+    while i + 1 < length_points:
+        p1 = points[i]
+        p2 = points[i + 1]
+        p_temp = p2
+        for j in range(min(i + forward_point, length_points - 1), i + 1, -1):
+            p3 = points[j]
+            p4 = points[j - 1]
+            x, y = get_intersect_by_two_point(p1, p2, p3, p4)
+            if x is not None and y is not None:
+                p_temp = x, y
+                global_j = j - 1
+                break
+        else:
+            global_j = i + 1
+        ps_index[i] = cnt
+        ps_index[i + 1:global_j] = i + 1
+        cnt += 1
+        i = global_j
+        ps.append(p_temp)
+    ps_index[-1] = cnt
+    ps_array = npa(ps)
+    return ps_array[:, 0], ps_array[:, 1], ps_index
+
+
 def move_distance_with_endpoints(a, dist, flag):
     """
     移线，注意和move_distance移线不同！！！
@@ -188,7 +225,6 @@ def move_distance_with_endpoints(a, dist, flag):
     x_end, y_end = get_foot(a[-1, :], lines[-1:, :])
     x = np.hstack((x_start, x, x_end))
     y = np.hstack((y_start, y, y_end))
-
     return x, y
 
 
@@ -437,3 +473,16 @@ def get_arc(o, r, theta1, theta2, length):
     x = r * np.cos(theta) + o[0]
     y = r * np.sin(theta) + o[1]
     return x, y
+
+
+def rect_to_points(rect):
+    """
+    rect矩形转坐标点
+    """
+    points = np.vstack([rect[0],
+                        [rect[0][0], rect[0][1] + rect[2]],
+                        [rect[0][0] + rect[1], rect[0][1] + rect[2]],
+                        [rect[0][0] + rect[1], rect[0][1]],
+                        rect[0]
+                        ])
+    return points

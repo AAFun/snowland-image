@@ -2,12 +2,13 @@ __auth__ = 'A.Star'
 
 import numpy as np
 from qgis.core import QgsDistanceArea, QgsUnitTypes, QgsPointXY
+from snowland.gis_tool import ELLIPSOID
 
 npa = np.array
 
 
 class DistanceArea:
-    def __init__(self, ellipsoid=(6378137, 6356752.314245179), x=None, y=None):
+    def __init__(self, ellipsoid=ELLIPSOID, x=None, y=None):
         self.__qgs_distance = QgsDistanceArea()
         if x is None or y is None:
             if isinstance(ellipsoid, (list, tuple, np.ndarray)):
