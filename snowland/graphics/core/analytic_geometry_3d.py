@@ -8,6 +8,7 @@
 # @Software: PyCharm
 
 
+from astartool.error import ParameterValueError, ParameterTypeError
 import numpy as np
 
 from snowland.graphics.core.analytic_geometry_base import Line, Surface
@@ -48,8 +49,10 @@ class Line3D(Line):
                 # 参考资料： http://www.360doc.com/content/15/1222/10/17164483_522220811.shtml
                 a1, b1, c1, d1 = plane1.a, plane1.b, plane1.c, plane1.d
                 a2, b2, c2, d2 = plane2.a, plane2.b, plane2.c, plane2.d
-                self.a, self.b, self.c = npl.det([[b1, c1], [b2, c2]]), npl.det([[a1, c1], [a2, c2]]), npl.det([[a1, b1], [a2, b2]])
-                self.p = Point3D((b1*d2-b2*d1)/(a1*b2-a2*b1), (a1*d2-a2*d1)/(a2*b1-a1*b2), 0)
+                self.a, self.b, self.c = npl.det([[b1, c1], [b2, c2]]), npl.det([[a1, c1], [a2, c2]]), npl.det(
+                    [[a1, b1], [a2, b2]])
+                self.p = Point3D((b1 * d2 - b2 * d1) / (a1 * b2 - a2 * b1), (a1 * d2 - a2 * d1) / (a2 * b1 - a1 * b2),
+                                 0)
 
     def feature_vector(self):
         """
@@ -63,22 +66,24 @@ class Plane3D(Surface):
     def __init__(self, a=None, b=None, c=None, d=None, v=None, p0=None, p1=None, p2=None, p3=None, *args, **kwargs):
         if a is not None and b is not None and c is not None and d is not None:
             # ax + by + cz + d = 0
-            self.a, self.b, self.c, self._d = a, b, c, d
+            if a == 0 and b == 0 and c == 0:
+                raise ParameterValueError("a, b, c不全为0")
+            self.a, self.b, self.c, self.d = a, b, c, d
         elif v is not None and p0 is not None:
             if isinstance(v, Vector3):
                 self.a, self.b, self.c = v.x[0], v.x[1], v.x[2]
-            elif isinstance(v, (list, np.ndarray)):
+            elif isinstance(v, (list, tuple, np.ndarray)):
                 self.a, self.b, self.c = v[0], v[1], v[2]
                 v = Vector3(v)
             else:
-                raise ValueError('类型不匹配')
+                raise ParameterTypeError('类型不匹配')
 
             if isinstance(p0, Point3D):
                 p = p0.p
-            elif isinstance(p0, (list, np.ndarray)):
+            elif isinstance(p0, (list, tuple, np.ndarray)):
                 p = Point3D(p0)
             else:
-                raise ValueError('类型不匹配')
+                raise ParameterTypeError('类型不匹配')
             self.d = - v.x @ p.p
         else:
             # TODO: 三点式
@@ -87,12 +92,12 @@ class Plane3D(Surface):
 
     def normal_vector(self):
         """
-        特征向量
+        法向量
         :return:
         """
         return Vector3([self.a, self.b, self.c])
 
-    def is_vector_parallel(self, vector: (Vector3, np.ndarray, list)):
+    def is_vector_parallel(self, vector: (Vector3, np.ndarray, list, tuple)):
         """
         判断直线是否与平面是否平行
         :param plane1:
@@ -116,3 +121,8 @@ class Plane3D(Surface):
         :return:
         """
         return self.normal_vector().angle(plane.normal_vector())
+
+
+class EllipsoidSurface(Surface):
+    def __init__(self):
+        pass
