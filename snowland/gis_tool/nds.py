@@ -82,11 +82,6 @@ def get_left_bottom_of_tile(tile_id, level=None):
     return get_left_bottom_of_tile_with_level(tile_id, level)
 
 
-def get_lonlat_of_tile(tile_id: int):
-    coord = get_left_bottom_of_tile(tile_id)
-    return coord
-
-
 def get_index_of_tile_id_with_level(tile_id: int, level: int):
     offset = 1 << (16 + level)
     return tile_id - offset
@@ -140,6 +135,9 @@ def get_lon_lat_of_tile(tile_id: int, level: int = None):
 
 
 def get_tile_bounding_box(tile_id: int, level=13):
+    """
+    获得tile所在的矩形框
+    """
     if level is None:
         level = get_level_of_tile_id(tile_id)
     p = get_left_bottom_of_tile_with_level(tile_id, level)

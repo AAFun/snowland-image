@@ -272,8 +272,11 @@ class Square(Rectangle, Diamond):
 
 
 class Ellipse(Shape):
-    def __init__(self, centre, a=0, b=0):
-        self.centre = Point2D(centre)
+    def __init__(self, p1, p2, a=0, b=0):
+        """
+        焦点1, 焦点2, 长轴， 短轴
+        """
+        self.p1, self.p2 = Point2D(p1), Point2D(p2)
         self.a = a
         self.b = b
 
@@ -297,7 +300,7 @@ class Ellipse(Shape):
 
 class Circle(Ellipse):
     def __init__(self, centre, r=0):
-        super(Circle, self).__init__(centre, r, r)
+        super(Circle, self).__init__(centre, centre, r, r)
 
     @property
     def r(self):
