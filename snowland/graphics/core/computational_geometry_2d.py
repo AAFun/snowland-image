@@ -303,6 +303,10 @@ class Circle(Ellipse):
         super(Circle, self).__init__(centre, centre, r, r)
 
     @property
+    def centre(self):
+        return self.p1
+
+    @property
     def r(self):
         return self.a
 

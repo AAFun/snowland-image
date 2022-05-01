@@ -75,7 +75,7 @@ class Point3D(Point):
 class LineString3D(LineString):
     def __init__(self, X=None):
         super(LineString3D, self).__init__(X=X)
-        assert self.X.shape[0] is 3
+        assert self.X.shape[0] == 3
 
     def length(self, metric='euclidean', *args, **kwargs):
         m, n = self.X.shape
