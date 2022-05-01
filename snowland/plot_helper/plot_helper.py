@@ -30,3 +30,4 @@ def plot_arrow(x, y, *args, **kwargs):
         tuple_args += ([p1[0], p2[0]], [p1[1], p2[1]]) + args
         cnt += 2
     plt.plot(*tuple_args, **kwargs)
+

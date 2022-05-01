@@ -10,7 +10,7 @@
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, euclidean
-from astartool.number import equals_zero
+from astartool.number import equals_zero, equals_zero_all
 
 npa = np.array
 npl = np.linalg
@@ -32,7 +32,7 @@ def get_lines(line_points):
     A = line_points[1:, 1] - line_points[:-1, 1]
     B = line_points[:-1, 0] - line_points[1:, 0]
     C = line_points[1:, 0] * line_points[:-1, 1] - line_points[:-1, 0] * line_points[1:, 1]
-    return np.vstack((A, B, C)).T * 10000
+    return np.vstack((A, B, C)).T
 
 
 def get_foot(point, line=None, A=None, B=None, C=None):
@@ -287,86 +287,87 @@ def min_rotate_rect_a(hull: np.ndarray, eps=1e-10):
     """
     area = np.inf
     lines_com = []
-    if equals_zero(hull[0] - hull[-1], eps):
+    if not equals_zero_all(hull[0] - hull[-1], eps):
         points_hull = np.vstack((hull, hull[0]))
     else:
         points_hull = hull
 
     lines = get_lines(points_hull)
-    for i, p2 in hull:
-        p1 = hull[i - 1, :]  # 凸包上两个点
+    for i, p2 in enumerate(points_hull[:-1]):
         line = lines[i]
         dist_cmp = (points_hull[:, 0] * line[0] + points_hull[:, 1] * line[1] + line[2])
         dist = dist_cmp / npl.norm(line[:2])
 
         h_ind = np.argmax(np.abs(dist))  # 得到距离最大的点距离，即为高，同时得到该点坐标
         h = dist[h_ind]
-        line_px = line
-        line_px[2] += dist[h_ind]
-        p = hull[h_ind]
-        line_cz = npa([line[1], -line[0], -line[1] * p[0] + line[0] * p[1]])
+        line_px = line.copy()
+        line_px[2] -= dist_cmp[h_ind]
+        line_cz = npa([line[1], -line[0], 0])
 
-        dist_cmp = (points_hull[:, 0] * line_cz[0] + points_hull[:, 1] * line_cz[1] + line[2])
+        dist_cmp = (points_hull[:, 0] * line_cz[0] + points_hull[:, 1] * line_cz[1])
         dist = dist_cmp / npl.norm(line_cz[:2])
 
         v_ind_max = np.argmax(dist)  # 得到距离最大的点距离，即为高
         v_ind_min = np.argmin(dist)
 
-        w = np.abs(dist[v_ind_max]) + np.abs(dist[v_ind_min])
-        a = h * w
+        w = dist[v_ind_max] - dist[v_ind_min]
+        a = abs(h * w)
         if area >= h * w:
             # 使面积最小
             area = a
-            line_cz_1 = line_cz
-            line_cz_1[2] += dist[v_ind_max]
-            line_cz_2 = line_cz
-            line_cz_2[2] += dist[v_ind_min]
+            line_cz_1 = line_cz.copy()
+            line_cz_1[2] -= dist_cmp[v_ind_max]
+            line_cz_2 = line_cz.copy()
+            line_cz_2[2] = dist_cmp[v_ind_min]
             lines_com = [line, line_cz_1, line_px, line_cz_2, line]
-    return get_intersect_point(lines_com)
+
+    x, y = get_intersect_point(np.vstack(lines_com))
+    return np.vstack((x, y)).T, area
 
 
 def min_rotate_rect_c(hull: np.ndarray, eps=1e-10):
     """
     最小外接矩形--按周长
     """
-    lines_com = []
     cir = np.inf
-    if equals_zero(hull[0] - hull[-1], eps):
+    lines_com = []
+    if not equals_zero_all(hull[0] - hull[-1], eps):
         points_hull = np.vstack((hull, hull[0]))
     else:
         points_hull = hull
 
     lines = get_lines(points_hull)
-    for i, p2 in hull:
-        p1 = hull[i - 1, :]  # 凸包上两个点
+    for i, p2 in enumerate(points_hull[:-1]):
         line = lines[i]
         dist_cmp = (points_hull[:, 0] * line[0] + points_hull[:, 1] * line[1] + line[2])
         dist = dist_cmp / npl.norm(line[:2])
 
         h_ind = np.argmax(np.abs(dist))  # 得到距离最大的点距离，即为高，同时得到该点坐标
         h = dist[h_ind]
-        line_px = line
-        line_px[2] += dist[h_ind]
-        p = hull[h_ind]
-        line_cz = npa([line[1], -line[0], -line[1] * p[0] + line[0] * p[1]])
+        line_px = line.copy()
+        line_px[2] -= dist_cmp[h_ind]
+        line_cz = npa([line[1], -line[0], 0])
 
-        dist_cmp = (points_hull[:, 0] * line_cz[0] + points_hull[:, 1] * line_cz[1] + line[2])
+        dist_cmp = (points_hull[:, 0] * line_cz[0] + points_hull[:, 1] * line_cz[1])
         dist = dist_cmp / npl.norm(line_cz[:2])
 
         v_ind_max = np.argmax(dist)  # 得到距离最大的点距离，即为高
         v_ind_min = np.argmin(dist)
 
-        w = np.abs(dist[v_ind_max]) + np.abs(dist[v_ind_min])
+        w = abs(dist[v_ind_max] - dist[v_ind_min])
         c = h + w
-        if cir > h + w:
+        if cir >= c:
             # 使面积最小
             cir = c
-            line_cz_1 = line_cz
-            line_cz_1[2] += dist[v_ind_max]
-            line_cz_2 = line_cz
-            line_cz_2[2] += dist[v_ind_min]
+            line_cz_1 = line_cz.copy()
+            line_cz_1[2] -= dist_cmp[v_ind_max]
+            line_cz_2 = line_cz.copy()
+            line_cz_2[2] = dist_cmp[v_ind_min]
             lines_com = [line, line_cz_1, line_px, line_cz_2, line]
-    return get_intersect_point(lines_com)
+
+    x, y = get_intersect_point(np.vstack(lines_com))
+    return np.vstack((x, y)).T, cir * 2
+
 
 
 def min_rotate_rect(hull: np.ndarray, cmp: str = 'a', eps=1e-10):
