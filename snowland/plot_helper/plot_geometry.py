@@ -4,7 +4,7 @@ import numpy as np
 from astartool.error import ParameterError
 from matplotlib import pylab as plt
 
-from snowland.graphics.core.analytic_geometry_2d import Line2D, Ellipse
+from snowland.graphics.core.analytic_geometry_2d import Line2D, Polynomial
 
 npa = np.array
 
@@ -26,3 +26,8 @@ def plot_line2d_geometry(line: Line2D, x=None, y=None, *args, **kwargs):
         plt.plot(x, y, *args, **kwargs)
     else:
         raise ParameterError("错误的输入数据")
+
+
+def plot_polynomial(polynomial: Polynomial, interval, points=10, *args, **kwargs):
+    x = np.linspace(interval[0], interval[1], points)
+    plt.plot(x, polynomial.get(x), *args, **kwargs)

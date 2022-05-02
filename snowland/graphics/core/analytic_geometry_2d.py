@@ -327,7 +327,7 @@ class Polynomial(Line):
             else:
                 raise ParameterTypeError("参数类型错误")
         elif coefficient is not None and exponent is not None:
-            self.polynomial_dict = dict(zip(exponent, polynomial))
+            self.polynomial_dict = dict(zip(exponent, coefficient))
         else:
             self.polynomial_dict = {}
 
@@ -336,3 +336,12 @@ class Polynomial(Line):
         导函数
         """
         return Polynomial({k - 1: k * v for k, v in self.polynomial_dict.items() if not (-eps < k < eps)})
+
+    def get(self, x):
+        """
+        获得x对应的值
+        """
+        y = np.zeros_like(x)
+        for k, v in self.polynomial_dict.items():
+            y += v * x ** k
+        return y
