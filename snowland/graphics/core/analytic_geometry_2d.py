@@ -345,3 +345,6 @@ class Polynomial(Line):
         for k, v in self.polynomial_dict.items():
             y += v * x ** k
         return y
+
+    def __call__(self, x, *args, **kwargs):
+        return self.get(x)
