@@ -8,7 +8,7 @@ from snowland.gis_tool.qgis_tool import QgsGeometry
 
 class GeometryStructure:
     def __init__(self):
-        self.geometry_points = np.empty((0, 3))
+        self.geometry_points = np.empty((0, 4))
         self.geometry = None
         self.features = []
         self.road_id = set()
@@ -18,10 +18,10 @@ class GeometryStructure:
     def init_by_features(cls, features: List[QgsFeature]):
         geom_item = GeometryStructure()
         f = features[0]
-        geom_item.geometry_points = f.geometry().points()
+        geom_item.geometry_points = f.geometry().pointsZM()
         geom_item.features.append(f)
         for f in features[1:]:
-            points = f.geometry().points()
+            points = f.geometry().pointsZM()
             geom_item.geometry_points = np.vstack((geom_item.geometry_points, points[1:, :]))
             geom_item.features.append(f)
         geom_item.create_geometry()
@@ -35,7 +35,7 @@ class GeometryStructure:
             fromPolyline(QgsLineString(self.geometry_points[:, 0],
                                        self.geometry_points[:, 1],
                                        self.geometry_points[:, 2],
-                                       np.zeros_like(self.geometry_points[:, 0])
+                                       self.geometry_points[:, 3],
                                        ))
 
     def create_road_id(self):
@@ -54,13 +54,13 @@ class GeometryStructure:
             ps = feature.geometry().asPolyline()
             y_new = z[:len(ps)]
             z = z[len(ps) - 1:]
-            geo_new = QgsGeometry(QgsLineString(y_new[:, 0], y_new[:, 1], y_new[:, 2], np.zeros_like(y_new[:, 0])))
+            geo_new = QgsGeometry(QgsLineString(y_new[:, 0], y_new[:, 1], y_new[:, 2], y_new[:, 3]))
             result.append(geo_new)
         return result
 
     def reset_geometry(self, geometry: QgsGeometry):
         self.geometry = geometry
-        self.geometry_points = geometry.points()
+        self.geometry_points = geometry.pointsZM()
 
 
 class Node:

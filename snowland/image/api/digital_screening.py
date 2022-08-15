@@ -10,8 +10,13 @@
 import numpy as np
 from functools import reduce
 from skimage.transform import resize
-from skimage._shared.utils import assert_nD
 from skimage.data import chelsea
+
+try:
+    from skimage._shared.utils import assert_nD
+except:
+    def assert_nD(image, n):
+        assert len(image.shape) == n
 
 npa = np.array
 
@@ -82,13 +87,13 @@ def digital_screening(img: np.ndarray, mask=Mask_0_degree, mask_shape=Mask_0_deg
     assert_nD(img, 2)
     if degree is not None:
         assert degree in [0, 15, 45, 75], "degree must in (0, 15, 45, 75, )"
-        if degree is 0:
+        if degree == 0:
             mask, mask_shape = Mask_0_degree, Mask_0_degree_shape
-        elif degree is 15:
+        elif degree == 15:
             mask, mask_shape = Mask_15_degree, Mask_15_degree_shape
-        elif degree is 45:
+        elif degree == 45:
             mask, mask_shape = Mask_45_degree, Mask_45_degree_shape
-        elif degree is 75:
+        elif degree == 75:
             mask, mask_shape = Mask_75_degree, Mask_75_degree_shape
     time = 12
     img_shape = img.shape
@@ -157,7 +162,7 @@ import PIL
 
 # if __name__ == '__main__':
 #     from PIL import Image
-#     from skimage.color import rgb2grey
+#     from skimage.color import rgb2gray
 #     import pickle as pk
 #
 #     time = 12

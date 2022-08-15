@@ -1,5 +1,4 @@
 import numpy as np
-from snowland.gis_tool import EARTH_RADIUS
 from scipy.spatial.distance import euclidean
 
 npa = np.array

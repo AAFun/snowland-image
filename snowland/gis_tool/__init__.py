@@ -9,5 +9,4 @@ NDS_90_DEGREES = 0x3fffffff
 NDS_180_DEGREES = 0x7fffffff
 NDS_360_DEGREES = 4294967295
 
-
 from snowland.gis_tool import gis_helper, haversine, nds, transformer

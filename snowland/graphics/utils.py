@@ -11,12 +11,23 @@
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, euclidean
 from astartool.number import equals_zero, equals_zero_all
+from astartool.data_structure import LinkedList
 
 npa = np.array
 npl = np.linalg
 
 
 def middle(x, x1, x2, eps=1e-8):
+    """
+    判断点是否在x1, x2之间
+    x, x1, x2 均为ndarray
+    """
+    dx1 = x - x1
+    dx2 = x - x2
+    return ((x1 < x) & (x < x2)) | ((x1 > x) & (x > x2)) | ((-eps < dx1) & (dx1 < eps)) | ((-eps < dx2) & (dx2 < eps))
+
+
+def is_in_between(x, x1, x2, eps=1e-8):
     """
     判断点是否在x1, x2之间
     x, x1, x2 均为ndarray
@@ -82,7 +93,7 @@ def get_intersect_point(line):
     return x, y
 
 
-def distance_point_line(points, line_points, metric=euclidean):
+def distance_point_line(points, line_points, metric=euclidean, eps=1e-8):
     """
     points: 单点, ndarray/list len(points) = 2
     line_points: 每两点组成的一条线， 代表一条linestring
@@ -100,8 +111,8 @@ def distance_point_line(points, line_points, metric=euclidean):
     # 是否为顶点坐标
     is_vertex = True
 
-    index = middle(foot_x, line_points[1:, 0], line_points[:-1, 0]) & middle(foot_y, line_points[1:, 1],
-                                                                             line_points[:-1, 1])
+    index = is_in_between(foot_x, line_points[1:, 0], line_points[:-1, 0], eps=eps) & \
+            is_in_between(foot_y, line_points[1:, 1], line_points[:-1, 1], eps=eps)
     if np.any(index):
         is_vertex = False
         points_check = np.vstack((foot_x[index].T, foot_y[index].T)).T
@@ -113,15 +124,16 @@ def distance_point_line(points, line_points, metric=euclidean):
     return is_vertex, points_check[ind], dist[0, ind]
 
 
-def distance_point_line_index(point, line_points, metric=euclidean):
+def distance_point_line_index(point, line_points, metric=euclidean, eps=1e-8):
     """
-    points: 单点(x, y), ndarray/list len(points) = 2
+    params points: 单点(x, y), ndarray/list len(points) = 2
     line_points: 每两点组成的一条线， 代表一条linestring
     返回tuple(isVe, ind, d)
     is_vertex: 找到的最近点是不是线的顶点
     p: 距离最近的点，ndarray
     d: 最近距离是多少
-    ind: index
+    ind: index 若 is_vertex 为 True, ind为最近节点的编号, 若 is_vertex 为 False, ind为最近节点的编号
+
     """
     # ABC即为线的参数 Ax + By + C = 0
     A = line_points[1:, 1] - line_points[:-1, 1]
@@ -132,8 +144,8 @@ def distance_point_line_index(point, line_points, metric=euclidean):
     # 是否为顶点坐标
     is_vertex = True
 
-    index = middle(foot_x, line_points[1:, 0], line_points[:-1, 0]) & middle(foot_y, line_points[1:, 1],
-                                                                             line_points[:-1, 1])
+    index = middle(foot_x, line_points[1:, 0], line_points[:-1, 0], eps=eps) & \
+            middle(foot_y, line_points[1:, 1], line_points[:-1, 1], eps=eps)
     if np.any(index):
         is_vertex = False
         index_ind, = np.where(index)
@@ -228,7 +240,56 @@ def move_distance_with_endpoints(a, dist, flag):
     return x, y
 
 
-def alignment(linestring1: np.ndarray, linestring2: np.ndarray, metric=euclidean, eps=1):
+def interp_points(line1: np.ndarray, line2: np.ndarray, metric=euclidean, eps=1e-8):
+    """
+    插入点
+    :param line1:
+    :param line2:
+    :param metric:
+    :param eps:
+    :return:
+    """
+
+    line1 = line1[:, :2]
+    line2 = line2[:, :2]
+
+    line1, line2 = alignment(line1, line2, metric, eps=eps)
+
+    point_list_2 = LinkedList()
+    new_point_list_2 = []
+    for p in line1[1:-1]:
+        flag, point, dist, index = distance_point_line_index(p, line2, metric=metric, eps=eps)
+        if not flag:
+            point_list_2.append((index, point))
+
+    point_list_1 = LinkedList()
+    new_point_list_1 = []
+    for p in line2[1:-1]:
+        flag, point, dist, index = distance_point_line_index(p, line1, metric=metric, eps=eps)
+        if not flag:
+            point_list_1.append((index, point))
+
+    pre_i = 0
+    for item in point_list_1:
+        i, p = item
+        new_point_list_1.extend(line1[pre_i:i + 1])
+        new_point_list_1.append(p)
+        pre_i = i + 1
+    new_point_list_1.extend(line1[pre_i:])
+
+    pre_j = 0
+    for item in point_list_2:
+        j, p = item
+        new_point_list_2.extend(line2[pre_j:j + 1])
+        new_point_list_2.append(p)
+        pre_j = j + 1
+    new_point_list_2.extend(line2[pre_j:])
+
+    # assert len(new_point_list_1) == len(new_point_list_2)
+    return np.vstack(new_point_list_1), np.vstack(new_point_list_2)
+
+
+def alignment(linestring1: np.ndarray, linestring2: np.ndarray, metric=euclidean, eps: float = 1.0):
     """
     化简车道线,使之按垂直方向对齐
     linestring1: 第一根线 m x 2 ndarray
@@ -238,7 +299,7 @@ def alignment(linestring1: np.ndarray, linestring2: np.ndarray, metric=euclidean
     """
     assert linestring1.shape[1] == 2
     assert linestring2.shape[1] == 2
-    is_vertex, points_check, dist, ind = distance_point_line_index(linestring2[0], linestring1)
+    is_vertex, points_check, dist, ind = distance_point_line_index(linestring2[0], linestring1, metric)
     if (not is_vertex) and metric(points_check, linestring1[0]) > eps:
         linestring1 = linestring1[ind + 1:]
         linestring1 = np.vstack((points_check, linestring1))
@@ -367,7 +428,6 @@ def min_rotate_rect_c(hull: np.ndarray, eps=1e-10):
 
     x, y = get_intersect_point(np.vstack(lines_com))
     return np.vstack((x, y)).T, cir * 2
-
 
 
 def min_rotate_rect(hull: np.ndarray, cmp: str = 'a', eps=1e-10):

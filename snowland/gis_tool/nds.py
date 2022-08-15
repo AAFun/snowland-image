@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import Union, List
+from typing import Union, List, Iterable
 
 import numpy as np
 from astartool.common import BIT_EACH
@@ -59,11 +59,15 @@ def get_tile_id(lon: (np.ndarray, List[float]), lat: (np.ndarray, List[float]), 
     """
     获得level层的瓦片
     """
-    ndsLon = dms_to_nds(lon)
-    ndsLat = dms_to_nds(lat)
+    if isinstance(lon, Iterable):
+        ndsLon = dms_to_nds(lon)
+        ndsLat = dms_to_nds(lat)
 
-    morton = nds_to_morton(ndsLon, ndsLat)
-    ntile_id = (((morton >> (2 * (31 - level))) & 0xffffffff) + (1 << (16 + level)))
+        morton = nds_to_morton(ndsLon, ndsLat)
+        ntile_id = (((morton >> (2 * (31 - level))) & 0xffffffff) + (1 << (16 + level)))
+    else:
+        tileids = get_tile_id([lon], [lat], level=level)
+        ntile_id = tileids[0]
     return ntile_id
 
 
@@ -140,6 +144,33 @@ def get_tile_bounding_box(tile_id: int, level=13):
     """
     if level is None:
         level = get_level_of_tile_id(tile_id)
-    p = get_left_bottom_of_tile_with_level(tile_id, level)
+    p = get_left_bottom_of_tile(tile_id, level)
     length = 180 / (1 << level)
     return p, length, length
+
+
+def get_a_set_of_tiles(start_point, end_point, level=13):
+    """
+    获取一系列的tile快
+    :param start_point:
+    :param end_point:
+    :param level:
+    :return:
+    """
+    points: np.ndarray = np.vstack((start_point, end_point))
+    start_point, end_point = points.min(axis=0), points.max(axis=0)
+    start, _, _ = get_left_bottom_of_tile(get_tile_id(*start_point, level=level), level=level)
+    end, len1, len2 = get_left_bottom_of_tile(get_tile_id(*end_point, level=level), level=level)
+    end[0] += len1
+    end[1] += len2
+    xi = np.arange(start[0], end[0], len1)
+    yi = np.arange(start[1], end[1], len2)
+    XI, YI = np.meshgrid(xi, yi)
+    points = np.concatenate((np.expand_dims(XI, axis=0), np.expand_dims(YI, axis=0)), axis=0)
+    points_all = np.expand_dims(points, axis=0)
+    points0 = points_all[:, :, :-1, :-1]
+    points1 = points_all[:, :, 1:, :-1]
+    points2 = points_all[:, :, 1:, 1:]
+    points3 = points_all[:, :, :-1, 1:]
+    blocks = np.concatenate((points0, points1, points2, points3, points0), axis=0)
+    return blocks
