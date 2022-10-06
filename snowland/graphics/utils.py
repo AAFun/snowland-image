@@ -6,7 +6,7 @@
 # @file: utils.py
 # @time: 2022/01/06 20:48
 # @Software: PyCharm
-
+from typing import List
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, euclidean
@@ -322,14 +322,21 @@ def alignment(linestring1: np.ndarray, linestring2: np.ndarray, metric=euclidean
     return linestring1, linestring2
 
 
-def rotate_geometry(poly: np.ndarray, rad):
+def rotate_geometry(poly: (np.ndarray, List), rad):
     """
     二维旋转rad弧度
     """
-    matrix = np.asarray([[np.cos(rad), np.sin(rad)],
-                         [-np.sin(rad), np.cos(rad)]])
+    if isinstance(poly, List):
+        poly = npa(poly)
+    if len(poly.shape) == 1:
+        flag = True
+        poly = np.expand_dims(poly, 0)
+    else:
+        flag = False
+    matrix = npa([[np.cos(rad), np.sin(rad)],
+                  [-np.sin(rad), np.cos(rad)]])
     new_poly = np.dot(poly, matrix)
-    return new_poly
+    return new_poly[0, :] if flag else new_poly
 
 
 def bounding_box(poly: np.ndarray, eps=1e-10):
@@ -547,3 +554,41 @@ def rect_to_points(rect):
                         rect[0]
                         ])
     return points
+
+
+def move_distance_by_point(p, vector, dist, metric=euclidean):
+    unit_vector = vector / npl.norm(vector)
+    unit_point = unit_vector + p
+    unitLen = metric(p, unit_point)
+    vecCenter = dist * unit_vector / unitLen
+    return vecCenter + p
+
+
+def move_distance_for_polygon(points, dist, flag=1, metric=euclidean):
+    sign = np.sign(flag)
+    lines = []
+    for p1, p2 in zip(points[:-1, :], points[1:, :]):
+        v_edge = p2 - p1
+        if equals_zero_all(v_edge):
+            continue
+        v = rotate_geometry(v_edge, -sign * np.pi / 2)
+        new_p1 = move_distance_by_point(p1, v, dist, metric)
+        new_p2 = move_distance_by_point(p2, v, dist, metric)
+        lines.append(get_lines(np.vstack([new_p1, new_p2])))
+    lines.append(lines[0])
+    lines_ndarray = np.vstack(lines)
+    x, y = get_intersect_point(lines_ndarray)
+    return np.hstack((x[-1], x)), np.hstack((y[-1], y))
+
+
+def curvature(ps):
+    """
+    计算曲率
+    :param ps n x 2 ndarray
+    :return:
+    """
+    vs = ps[1:] - ps[:-1]
+    vs2 = ps[2:] - ps[:-2]
+    dis1 = np.linalg.norm(vs, axis=1)
+    dis2 = np.linalg.norm(vs2, axis=1)
+    return 2 * (vs[:-1, 0] * vs[1:, 1] - vs[:-1, 1] * vs[1:, 0]) / (dis1[:-1] * dis1[1:] * dis2)

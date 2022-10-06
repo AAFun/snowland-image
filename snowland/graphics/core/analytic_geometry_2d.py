@@ -40,8 +40,8 @@ RIGHT = 1
 
 
 class Line2D(Line):
-    def __init__(self, a=None, b=0, c=0, p1: (Point2D, np.ndarray) = None, p2: (Point2D, np.ndarray) = None, *args,
-                 **kwargs):
+    def __init__(self, a=None, b=0, c=0, p1: (Point2D, np.ndarray, list) = None, p2: (Point2D, np.ndarray, list) = None,
+                 *args, **kwargs):
         if a is not None and b is not None and c is not None:
             # ax+by+c=0方式定义的线
             self.a, self.b, self.c = a, b, c
@@ -51,7 +51,7 @@ class Line2D(Line):
             self.a, self.b, self.c = p2.y - p1.y, p1.x - p2.x, p2.x * p1.y - p1.x * p2.y
         else:
             # TODO: 其他方式确定的直线
-            pass
+            raise ParameterValueError("错误的输入")
 
     def __distance_point(self, point):
         """
@@ -60,7 +60,7 @@ class Line2D(Line):
         :return:
         """
         p = Point2D(point)
-        return np.fabs(self.a * p.x + self.b * p.y + self.c) / np.sqrt(self.a ** 2 + self.b ** 2)
+        return np.fabs(self.a * p.x + self.b * p.y + self.c) / (self.a ** 2 + self.b ** 2) ** 0.5
 
     def distance_points(self, points):
         """
