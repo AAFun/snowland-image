@@ -7,15 +7,16 @@
 # @time: 2018/8/6 1:15
 # @Software: PyCharm
 
-from skimage.color import rgb2grey
+
 import numpy as np
+from skimage.color import rgb2gray as rgb2grey
 
 
 def sketch(img, threshold=15):
     """
     素描画生成
     param img: Image实例
-  param threshold: 介于0到100
+    param threshold: 介于0到100
     :return:
     """
     if threshold < 0:

@@ -11,7 +11,3 @@
 from snowland.image.api.digital_screening import *
 # from pencildraw import pencil_drawing
 # from pencildraw.pencils import pencil0, pencil1,pencil2, pencil3, pencil4
-
-
-import warnings
-warnings.warn('package will remove to style_migration in v1.0.0')

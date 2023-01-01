@@ -12,8 +12,13 @@ from copy import deepcopy
 import numpy as np
 
 
-# https://www.cnblogs.com/lonelyxmas/p/ 8564738.html
 def oilpaint(img, intensity=5):
+    """
+    https://www.cnblogs.com/lonelyxmas/p/ 8564738.html
+    :param img:
+    :param intensity:
+    :return:
+    """
     if np.max(img) > 1.1:
         img = img / 255
     tempValues = deepcopy(img)
