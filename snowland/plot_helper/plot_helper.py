@@ -6,16 +6,17 @@ from matplotlib import pylab as plt
 from snowland.graphics.utils import rotate_geometry
 
 
-def plot_line(p1, p2, *args, **kwargs):
+def plot_line(p1, p2, *args, handle=plt, **kwargs):
     """
-    绘制一条线
+    绘制线
     """
-    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], *args, **kwargs)
+    ax = handle.plot([p1[0], p2[0]], [p1[1], p2[1]], *args, **kwargs)
+    return ax
 
 
-def plot_arrow(x, y, *args, **kwargs):
+def plot_arrow(x, y, *args, handle=plt, **kwargs):
     """
-    绘制一个箭头
+    绘制箭头
     """
     ps = np.vstack((x, y)).T
     vec = ps[1:, :] - ps[:-1, :]
@@ -29,5 +30,5 @@ def plot_arrow(x, y, *args, **kwargs):
         p1, p2 = p - r, p
         tuple_args += ([p1[0], p2[0]], [p1[1], p2[1]]) + args
         cnt += 2
-    plt.plot(*tuple_args, **kwargs)
-
+    ax = handle.plot(*tuple_args, **kwargs)
+    return ax
