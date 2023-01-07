@@ -28,9 +28,10 @@ def plot_line2d_geometry(line: Line2D, x=None, y=None, *args, **kwargs):
         raise ParameterError("错误的输入数据")
 
 
-def plot_polynomial(polynomial: Polynomial, interval, points=10, *args, **kwargs):
+def plot_polynomial(polynomial: Polynomial, interval, points=10, *args, handle=plt, **kwargs):
     """
     绘制多项式
+    :param handle: 绘图句柄
     :param polynomial: 多项式对象
     :param interval: 绘制的区间（左右均为闭区间）
     :param points: 绘制的点数
@@ -39,4 +40,5 @@ def plot_polynomial(polynomial: Polynomial, interval, points=10, *args, **kwargs
     :return:
     """
     x = np.linspace(interval[0], interval[1], points)
-    plt.plot(x, polynomial.get(x), *args, **kwargs)
+    res = handle.plot(x, polynomial.get(x), *args, **kwargs)
+    return res

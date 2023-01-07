@@ -9,6 +9,7 @@
 
 from abc import ABCMeta
 from typing import List
+from numbers import Number
 
 from astartool.error import ParameterTypeError, ParameterValueError
 from astartool.number import equals_zero
@@ -41,6 +42,7 @@ RIGHT = 1
 
 class Line2D(Line):
     def __init__(self, a=None, b=0, c=0, p1: (Point2D, np.ndarray, list) = None, p2: (Point2D, np.ndarray, list) = None,
+                 k=None,
                  *args, **kwargs):
         if a is not None and b is not None and c is not None:
             # ax+by+c=0方式定义的线
@@ -49,6 +51,16 @@ class Line2D(Line):
             # 两点式定义的直线
             p1, p2 = Point2D(p1), Point2D(p2)
             self.a, self.b, self.c = p2.y - p1.y, p1.x - p2.x, p2.x * p1.y - p1.x * p2.y
+        elif k is not None:
+            if p1 is not None:
+                # 点斜式确定的直线
+                # y-y0 = k(x-x0)
+                p1 = Point2D(p1)
+                self.a, self.b, self.c = k, -1, p1.y - k * p1.x
+            else:
+                # 斜截式定义的直线
+                # y = kx+b
+                self.a, self.b, self.c = k, -1, self.b
         else:
             # TODO: 其他方式确定的直线
             raise ParameterValueError("错误的输入")
@@ -162,6 +174,27 @@ class Line2D(Line):
         else:
             raise ParameterTypeError("不支持的points类型")
 
+    def __str__(self):
+        ax = ''
+        if np.isclose(self.a, 0):
+            ax = ''
+        elif np.isclose(self.a, 1):
+            ax = 'x'
+        elif np.isclose(self.a, -1):
+            ax = '-x'
+        else:
+            ax = '{a}x'.format(a=self.a)
+
+        if np.isclose(self.b, 0):
+            by = ''
+        elif np.isclose(self.b, 1):
+            by = 'y'
+        elif np.isclose(self.b, -1):
+            by = '-y'
+        else:
+            by = '{b}y'.format(b=self.b)
+        s = "{ax}+{by}+{c}=0".format(ax=ax, by=by, c=self.c)
+        return s.replace("+-", "-")
 
 class ConicalSection(Line, metaclass=ABCMeta):
     """
@@ -281,6 +314,7 @@ class Parabola(ConicalSection):
     """
     抛物线
     """
+
     def __init__(self, params, eps=1e-8):
         # ax2 +2hxy +by2 +2gx +2fy+c =0
         self.params = params
@@ -314,6 +348,7 @@ class Polynomial(Line):
     """
     多项式
     """
+
     def __init__(self, polynomial=None, coefficient=None, exponent=None):
         """
         coefficient: 系数
@@ -326,10 +361,21 @@ class Polynomial(Line):
                 self.polynomial_dict = polynomial
             else:
                 raise ParameterTypeError("参数类型错误")
-        elif coefficient is not None and exponent is not None:
-            self.polynomial_dict = dict(zip(exponent, coefficient))
+        elif coefficient is not None:
+            if exponent is not None:
+                self.polynomial_dict = dict(zip(exponent, coefficient))
+            else:
+                self.polynomial_dict = dict(zip(range(len(coefficient)), coefficient))
         else:
             self.polynomial_dict = {}
+
+    @property
+    def coefficient(self):
+        return list(self.polynomial_dict.values())
+
+    @property
+    def exponent(self):
+        return list(self.polynomial_dict.keys())
 
     def diff(self, eps=1e-8):
         """
@@ -346,5 +392,117 @@ class Polynomial(Line):
             y += v * x ** k
         return y
 
+    def tangent_line(self, x, eps=1e-8):
+        """
+        求x位置上的切线方程
+        :param x:
+        :param eps:
+        :return:
+        """
+        diff_poly = self.diff(eps)
+        return Line2D(k=diff_poly(x), p1=(x, self(x)))
+
+    def simplify(self, eps=1e-8):
+        """
+        化简多项式，删去系数为0的项
+        :param eps: 判断0的精度
+        :return:
+        """
+        self.polynomial_dict = {k: v for k, v in self.polynomial_dict.items() if not (-eps < v < eps)}
+
     def __call__(self, x, *args, **kwargs):
         return self.get(x)
+
+    def __iadd__(self, other):
+        if isinstance(other, Polynomial):
+            for k, v in other.polynomial_dict.items():
+                if k in self.polynomial_dict:
+                    self.polynomial_dict[k] += v
+                else:
+                    self.polynomial_dict[k] = v
+        elif isinstance(other, Number):
+            if 0 in self.polynomial_dict:
+                self.polynomial_dict += other
+            else:
+                self.polynomial_dict[0] = other
+        else:
+            raise ParameterTypeError("错误的数据类型")
+
+    def __isub__(self, other):
+        if isinstance(other, Polynomial):
+            for k, v in other.polynomial_dict.items():
+                if k in self.polynomial_dict:
+                    self.polynomial_dict[k] -= v
+                else:
+                    self.polynomial_dict[k] = -v
+        elif isinstance(other, Number):
+            if 0 in self.polynomial_dict:
+                self.polynomial_dict -= other
+            else:
+                self.polynomial_dict[0] = -other
+        else:
+            raise ParameterTypeError("错误的数据类型")
+
+    def __add__(self, other):
+        poly = self.polynomial_dict
+        if isinstance(other, Polynomial):
+            for k, v in other.polynomial_dict.items():
+                if k in poly:
+                    poly[k] += v
+                else:
+                    poly[k] = v
+        elif isinstance(other, Number):
+            if 0 in poly:
+                poly += other
+            else:
+                poly = other
+        else:
+            raise ParameterTypeError("错误的数据类型")
+        return Polynomial(poly)
+
+    def __sub__(self, other):
+        poly = self.polynomial_dict
+        if isinstance(other, Polynomial):
+            for k, v in other.polynomial_dict.items():
+                if k in poly:
+                    poly[k] -= v
+                else:
+                    poly[k] = -v
+        elif isinstance(other, Number):
+            if 0 in poly:
+                poly[0] -= other
+            else:
+                poly[0] = -other
+        else:
+            raise ParameterTypeError("错误的数据类型")
+        return Polynomial(poly)
+
+    def to_string(self, symbol='x'):
+        res = [(k, v) for k, v in self.polynomial_dict.items()]
+        res.sort()
+        s = []
+        for p, c in self.polynomial_dict.items():
+            if np.isclose(c, 1):
+                c_str = ''
+            elif np.isclose(c, -1):
+                c_str = '-'
+            elif np.isclose(c, 0):
+                continue
+            else:
+                c_str = "{c}".format(c=c)
+
+            if np.isclose(p, 0):
+                p_str = ''
+            elif np.isclose(p, 1):
+                p_str = '{symbol}'.format(symbol=symbol)
+            elif p > 0:
+                p_str = '{symbol}^{p}'.format(symbol=symbol, p=p)
+            else:
+                p_str = '{symbol}^({p})'.format(symbol=symbol, p=p)
+            s.append(c_str + p_str)
+
+        s_str = '+'.join(s)
+        return s_str.replace("+-", "-")
+
+    def __str__(self):
+        return self.to_string('x')

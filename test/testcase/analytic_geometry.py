@@ -50,3 +50,12 @@ class TestLine2D(unittest.TestCase):
         poly = Polynomial({4: 1, 3: 4, 0: 6, -1: 7, -2: 4})
         new_poly = poly.diff()
         self.assertEqual(new_poly.polynomial_dict, {3: 4, 2: 12, -2: -7, -3: -8})
+
+    def test_polynomial_init(self):
+        poly = Polynomial(coefficient=[2, 3, -5, 1, -4.0])
+        new_poly = poly.diff()
+        self.assertEqual(new_poly.polynomial_dict, {1: 2, 2: 12})
+
+        poly = Polynomial({4: 1, 3: 4, 0: 6, -1: 7, -2: 4})
+        new_poly = poly.diff()
+        self.assertEqual(new_poly.polynomial_dict, {3: 4, 2: 12, -2: -7, -3: -8})

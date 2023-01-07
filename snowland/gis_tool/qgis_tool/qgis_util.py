@@ -160,7 +160,8 @@ def thinning_by_step_method(points, step=2):
 def douglas_peuker(points, d=5e-7):
     """
     Douglas Peuker
-    :param points:
+    :param points: n x 2 ndarray
+    :param d: 限制距离
     :return:
     """
     if len(points) < 2:

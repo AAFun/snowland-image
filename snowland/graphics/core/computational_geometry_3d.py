@@ -52,7 +52,7 @@ class Point3D(Point):
         return self.p[0]
 
     @x.setter
-    def set_x(self, px):
+    def x(self, px):
         self.p[0] = px
 
     @property
@@ -60,7 +60,7 @@ class Point3D(Point):
         return self.p[1]
 
     @y.setter
-    def set_y(self, py):
+    def y(self, py):
         self.p[1] = py
 
     @property
@@ -68,7 +68,7 @@ class Point3D(Point):
         return self.p[0]
 
     @z.setter
-    def set_z(self, px):
+    def z(self, px):
         self.p[0] = px
 
 
@@ -227,7 +227,7 @@ class Circle3D(Ellipse3D):
         return self.a
 
     @r.setter
-    def set_r(self, ra):
+    def r(self, ra):
         self.a = self.b = ra
 
     def girth(self):
